@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "clean-ddd-hexagonal": {
+      "source": "ccheney/robust-skills",
+      "sourceType": "github",
+      "computedHash": "37d516cad994acaf692e6d57761601ef9477dce0bc98e8b6b76329e17afe90b6"
+    },
+    "python-backend": {
+      "source": "jiatastic/open-python-skills",
+      "sourceType": "github",
+      "computedHash": "79043c6c790d2a68ea6da31db8be02a77e0f2946c64e5e20f4d540f76d80e0dc"
+    }
+  }
+}

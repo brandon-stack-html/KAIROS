@@ -1,0 +1,33 @@
+# --- Python & Entornos ---
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+
+# --- Herramientas de IA y Agentes ---
+# Evita subir bases de datos vectoriales locales o estados de agentes
+.agent/
+.agents/
+.kiro/
+.claude/
+# Si usas Engram u otros sistemas de memoria local, ignora sus DBs
+*.db
+*.log
+
+# --- Configuración y Secretos ---
+.env
+.env.*
+!.env.example
+
+# --- Dependencias y Build ---
+# Ya tienes uv.lock y pyproject.toml, no necesitas subir carpetas de build
+dist/
+build/
+*.egg-info/
+
+# --- Docker ---
+# A veces es útil ignorar logs de contenedores
+.docker/
