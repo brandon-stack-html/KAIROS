@@ -1,4 +1,4 @@
-# --- Python & Entornos ---
+# ── Python & environments ─────────────────────────────────────────────
 .venv/
 venv/
 env/
@@ -7,27 +7,38 @@ __pycache__/
 *$py.class
 .python-version
 
-# --- Herramientas de IA y Agentes ---
-# Evita subir bases de datos vectoriales locales o estados de agentes
-.agent/
-.agents/
-.kiro/
-.claude/
-# Si usas Engram u otros sistemas de memoria local, ignora sus DBs
-*.db
-*.log
-
-# --- Configuración y Secretos ---
+# ── Secrets & config ─────────────────────────────────────────────────
 .env
 .env.*
 !.env.example
 
-# --- Dependencias y Build ---
-# Ya tienes uv.lock y pyproject.toml, no necesitas subir carpetas de build
+# ── Databases & migrations artifacts ─────────────────────────────────
+*.db
+*.sqlite3
+*.sqlite
+dev.db
+
+# ── Build & packaging ─────────────────────────────────────────────────
 dist/
 build/
 *.egg-info/
 
-# --- Docker ---
-# A veces es útil ignorar logs de contenedores
+# ── AI agents & tools ────────────────────────────────────────────────
+.agents/
+.agent/
+.kiro/
+.claude/
+.aider*
+
+# ── Logs & temp ──────────────────────────────────────────────────────
+*.log
+*.tmp
+.cache/
+
+# ── Docker ────────────────────────────────────────────────────────────
 .docker/
+
+# ── OS ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

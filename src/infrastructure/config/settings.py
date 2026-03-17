@@ -7,7 +7,11 @@ class Settings(BaseSettings):
     app_name: str = "boiler-plate-saas"
     debug: bool = False
     database_url: str = "sqlite+aiosqlite:///./dev.db"
+
+    # JWT
     secret_key: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 60
 
 
 settings = Settings()

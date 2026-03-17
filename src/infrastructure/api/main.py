@@ -2,6 +2,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from src.domain.shared.errors import DomainError
+from src.infrastructure.api.middleware.exception_handler import domain_exception_handler
 from src.infrastructure.config.settings import settings
 
 
@@ -23,7 +25,6 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(metadata.create_all)
 
     yield
-    # Teardown (add connection pool disposal here if needed)
 
 
 app = FastAPI(
@@ -32,10 +33,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── Routers ──────────────────────────────────────────────────────────
-from src.api.routers import users  # noqa: E402 (after app creation)
+# ── Exception handlers ────────────────────────────────────────────────
+app.add_exception_handler(DomainError, domain_exception_handler)
+
+# ── Routers ───────────────────────────────────────────────────────────
+from src.infrastructure.api.routers import auth, users  # noqa: E402
 
 app.include_router(users.router, prefix="/api/v1")
+app.include_router(auth.router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["ops"])

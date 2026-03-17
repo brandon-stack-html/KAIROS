@@ -18,7 +18,7 @@ uv run <command>               # Run a command in the project environment
 ## Running the App
 
 ```bash
-uv run uvicorn src.api.main:app --reload   # Dev server
+uv run uvicorn src.infrastructure.api.main:app --reload   # Dev server
 ```
 
 ## Testing
@@ -31,6 +31,21 @@ uv run pytest tests/path/to_test.py::test_name          # Run a single test
 ## Linting / Formatting
 
 No linter is configured yet. Add `ruff` via `uv add --dev ruff` when ready.
+
+## subagentes
+# Instrucciones de Orquestación
+
+Eres el Arquitecto Jefe. Tienes dos sub-agentes a tu disposición vía terminal:
+
+1. **Sub-Agente Gemini (@gemini):** Úsalo para "Auditoría de Contexto". 
+   - Comando: `gemini --prompt "[instrucción]"`
+   - Úsalo cuando el usuario pida revisar coherencia en múltiples módulos o buscar errores de DDD en todo el repo.
+
+2. **Sub-Agente Codex (@codex):** Úsalo para "Escritura de Fuerza Bruta".
+   - Comando: `aider --model openrouter/openai/gpt-5-codex --message "[instrucción]"`
+   - Úsalo para generar Repositories, Entities o Unit Tests siguiendo el patrón hexagonal.
+
+**Regla de Oro:** Siempre guarda el resultado de lo que hagan ellos en **Engram** usando `engram save "[resumen]"` para no perder el hilo.
 
 ## Architecture
 

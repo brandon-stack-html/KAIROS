@@ -1,4 +1,4 @@
-"""Pydantic v2 schemas for the /users endpoint.
+"""Pydantic v2 schemas for user-related endpoints.
 
 Validation lives here, NOT in the domain. The domain only
 receives already-parsed data via the application command.
@@ -17,3 +17,13 @@ class UserResponse(BaseModel):
     email: str
     name: str
     is_active: bool
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

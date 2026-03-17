@@ -1,0 +1,33 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Database files
+*.db
+*.sqlite3
+dev.db
+
+# Agent state and memory
+.agents/
+.agent/
+.kiro/
+.aider.chat.history.md
+.aider.input.history
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Locks (large, not useful for context)
+uv.lock
+
+# Logs
+*.log

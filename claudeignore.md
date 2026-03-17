@@ -1,2 +1,0 @@
-<!-- claude ignore -->
-.venv
