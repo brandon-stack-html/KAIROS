@@ -30,22 +30,11 @@ uv run pytest tests/path/to_test.py::test_name          # Run a single test
 
 ## Linting / Formatting
 
-No linter is configured yet. Add `ruff` via `uv add --dev ruff` when ready.
-
-## subagentes
-# Instrucciones de Orquestación
-
-Eres el Arquitecto Jefe. Tienes dos sub-agentes a tu disposición vía terminal:
-
-1. **Sub-Agente Gemini (@gemini):** Úsalo para "Auditoría de Contexto". 
-   - Comando: `gemini --prompt "[instrucción]"`
-   - Úsalo cuando el usuario pida revisar coherencia en múltiples módulos o buscar errores de DDD en todo el repo.
-
-2. **Sub-Agente Codex (@codex):** Úsalo para "Escritura de Fuerza Bruta".
-   - Comando: `aider --model openrouter/openai/gpt-5-codex --message "[instrucción]"`
-   - Úsalo para generar Repositories, Entities o Unit Tests siguiendo el patrón hexagonal.
-
-**Regla de Oro:** Siempre guarda el resultado de lo que hagan ellos en **Engram** usando `engram save "[resumen]"` para no perder el hilo.
+```bash
+uv run ruff check .          # Lint
+uv run ruff check . --fix    # Auto-fix
+uv run ruff format .         # Format
+```
 
 ## Architecture
 
@@ -54,35 +43,60 @@ Clean Architecture + DDD + Hexagonal (ports & adapters). Four layers under `src/
 ```
 src/
 ├── domain/                          # Pure business logic — ZERO external dependencies
-│   └── shared/                      # Base building blocks (reuse in every aggregate)
-│       ├── entity.py                # Entity[TId] — equality by identity
-│       ├── aggregate_root.py        # AggregateRoot[TId] — manages domain events
-│       ├── value_object.py          # ValueObject — immutable, equality by value
-│       ├── domain_event.py          # DomainEvent — base for all domain events
-│       └── errors.py                # DomainError base
+│   ├── shared/                      # Base building blocks (reuse in every aggregate)
+│   │   ├── entity.py                # Entity[TId] — equality by identity
+│   │   ├── aggregate_root.py        # AggregateRoot[TId] — manages domain events
+│   │   ├── value_object.py          # ValueObject — immutable, equality by value
+│   │   ├── domain_event.py          # DomainEvent — base for all domain events
+│   │   └── errors.py                # DomainError, EntityNotFoundError, ConflictError
+│   └── user/ ✅                     # User aggregate
+│       ├── user.py                  # Aggregate root + UserId, Email value objects
+│       ├── repository.py            # IUserRepository (DRIVEN PORT)
+│       ├── events.py                # UserRegistered, UserDeactivated
+│       └── errors.py                # InvalidEmailError, InvalidUserNameError
 │
 ├── application/                     # Use cases — orchestrates domain, defines ports
-│   └── shared/
-│       ├── unit_of_work.py          # AbstractUnitOfWork (async context manager)
-│       ├── event_publisher.py       # AbstractEventPublisher
-│       └── errors.py                # NotFoundError, ConflictError
-│
-├── api/                             # Presentation layer — FastAPI entry point
-│   ├── main.py                      # FastAPI app + /health
-│   ├── routers/                     # One router per aggregate/feature
-│   ├── middleware/                  # Auth, error handling, logging
-│   └── schemas/                     # Pydantic request/response models
+│   ├── shared/
+│   │   ├── unit_of_work.py          # AbstractUnitOfWork (async context manager)
+│   │   ├── event_publisher.py       # AbstractEventPublisher
+│   │   ├── password_hasher.py       # IPasswordHasher (DRIVEN PORT)
+│   │   └── errors.py                # NotFoundError, ConflictError
+│   ├── register_user/ ✅            # Use case: POST /users
+│   │   ├── command.py
+│   │   ├── handler.py
+│   │   └── ports.py
+│   └── login_user/ ✅               # Use case: POST /auth/login
+│       ├── command.py
+│       ├── handler.py
+│       └── ports.py
 │
 └── infrastructure/                  # Adapters — implements ports defined in domain/application
+    ├── api/ ✅                       # Presentation layer — FastAPI entry point
+    │   ├── main.py                  # FastAPI app + lifespan + /health
+    │   ├── routers/
+    │   │   ├── users.py             # POST /api/v1/users
+    │   │   └── auth.py              # POST /api/v1/auth/login
+    │   ├── middleware/
+    │   │   └── exception_handler.py # GlobalErrorHandler → JSON error envelope
+    │   └── schemas/
+    │       └── user_schemas.py      # UserCreate, UserResponse, LoginResponse
     ├── config/
     │   ├── settings.py              # pydantic-settings — reads from .env
     │   └── container.py             # Composition root — wire all dependencies here
     ├── persistence/
     │   ├── sqlalchemy/
-    │   │   ├── database.py          # Async engine, SessionLocal, Base
-    │   │   ├── models/              # SQLAlchemy ORM models (one file per aggregate)
-    │   │   └── mappers/             # Domain ↔ ORM mapping functions
+    │   │   ├── database.py          # Async engine + metadata
+    │   │   ├── types.py             # Custom column types
+    │   │   ├── tables/
+    │   │   │   └── users_table.py   # Table definition (imperative mapping)
+    │   │   ├── mappers/
+    │   │   │   └── user_mapper.py   # start_mappers() — maps User domain → ORM table
+    │   │   ├── user_repository.py   # SqlAlchemyUserRepository
+    │   │   └── unit_of_work.py      # SqlAlchemyUnitOfWork
     │   └── in_memory/               # In-memory repos for unit tests
+    ├── security/
+    │   ├── jwt_handler.py           # create_access_token, decode_token
+    │   └── password_hasher.py       # BcryptPasswordHasher
     ├── messaging/
     │   └── in_memory/               # In-memory event publisher for tests
     └── external/                    # Third-party service adapters (Stripe, email, etc.)
@@ -91,7 +105,7 @@ src/
 ### Dependency rule
 
 ```
-api → application → domain ← infrastructure
+infrastructure/api → application → domain ← infrastructure/persistence
 ```
 
 Domain never imports from application, api, or infrastructure.
@@ -129,5 +143,29 @@ src/infrastructure/persistence/sqlalchemy/
 ## Stack
 
 - Python 3.12, FastAPI, Uvicorn
-- SQLAlchemy (async) + pydantic-settings
+- SQLAlchemy (async) + pydantic-settings + Alembic (migrations)
+- JWT authentication + error handling middleware
 - Environment variables via `.env` (gitignored)
+
+## Current Implementation Status
+
+✅ **Domain:** Entity, AggregateRoot, ValueObject, DomainEvent, DomainError, ConflictError, EntityNotFoundError
+✅ **Application shared:** AbstractUnitOfWork, AbstractEventPublisher, IPasswordHasher
+✅ **User aggregate:** User, UserId, Email, IUserRepository, UserRegistered, UserDeactivated
+✅ **Use cases:** RegisterUser, LoginUser (JWT)
+✅ **Infrastructure API:** FastAPI app, /health, users + auth routers, GlobalErrorHandler
+✅ **Infrastructure persistence:** SQLAlchemy async, imperative mapping, SqlAlchemyUnitOfWork
+✅ **Infrastructure security:** BcryptPasswordHasher, JWT handler
+✅ **Migrations:** Alembic configured, initial migration applied
+✅ **Style:** Ruff configured (pyproject.toml)
+
+🔜 **Next:** Generic SQLAlchemyRepository[T], TracingMiddleware + structlog, Docker + pgvector, test fixtures
+
+## Development Workflow
+
+1. **Define domain:** Create aggregate in `src/domain/{aggregate}/`
+2. **Define use case:** Create handler in `src/application/{use_case}/`
+3. **Implement adapter:** Create SQLAlchemy model and mapper in `src/infrastructure/persistence/sqlalchemy/`
+4. **Create API route:** Add endpoint in `src/infrastructure/api/routers/{aggregate}.py`
+5. **Run migrations:** `uv run alembic upgrade head`
+6. **Test:** `uv run pytest`
