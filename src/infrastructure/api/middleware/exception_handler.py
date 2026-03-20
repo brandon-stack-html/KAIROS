@@ -10,6 +10,9 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from src.domain.shared.errors import ConflictError, DomainError, EntityNotFoundError
+from src.infrastructure.api.logging import get_logger
+
+_logger = get_logger(__name__)
 
 _STATUS_MAP = {
     EntityNotFoundError: 404,
@@ -26,6 +29,14 @@ async def domain_exception_handler(request: Request, exc: DomainError) -> JSONRe
             break
     else:
         status_code = 400
+
+    _logger.warning(
+        "domain_error",
+        error_type=type(exc).__name__,
+        error_message=str(exc),
+        status_code=status_code,
+        path=request.url.path,
+    )
 
     return JSONResponse(
         status_code=status_code,

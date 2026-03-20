@@ -3,8 +3,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.domain.shared.errors import DomainError
+from src.infrastructure.api.logging import configure_logging
 from src.infrastructure.api.middleware.exception_handler import domain_exception_handler
+from src.infrastructure.api.middleware.tracing import TracingMiddleware
 from src.infrastructure.config.settings import settings
+
+configure_logging(log_level="DEBUG" if settings.debug else "INFO")
 
 
 @asynccontextmanager
@@ -32,6 +36,9 @@ app = FastAPI(
     debug=settings.debug,
     lifespan=lifespan,
 )
+
+# ── Middleware (outermost first) ───────────────────────────────────────
+app.add_middleware(TracingMiddleware)
 
 # ── Exception handlers ────────────────────────────────────────────────
 app.add_exception_handler(DomainError, domain_exception_handler)

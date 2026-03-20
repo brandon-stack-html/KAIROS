@@ -19,6 +19,7 @@ dependencies = [
     "passlib[bcrypt]>=1.7.4",
     "alembic>=1.18.4",
     "pyjwt>=2.12.1",
+    "structlog>=25.5.0",
 ]
 
 [project.optional-dependencies]
