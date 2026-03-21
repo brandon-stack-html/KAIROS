@@ -10,6 +10,7 @@ The ID is then:
   automatically includes it.
 - Injected into the response headers as X-Correlation-ID.
 """
+import re
 import uuid
 
 import structlog
@@ -24,7 +25,17 @@ class TracingMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        correlation_id = request.headers.get(CORRELATION_HEADER) or str(uuid.uuid4())
+        # Only accept valid UUID4 format from clients — reject arbitrary strings
+        # to prevent log injection attacks.
+        _UUID_RE = re.compile(
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        )
+        provided = request.headers.get(CORRELATION_HEADER, "")
+        correlation_id = (
+            provided
+            if provided and _UUID_RE.match(provided.lower())
+            else str(uuid.uuid4())
+        )
 
         structlog.contextvars.clear_contextvars()
         structlog.contextvars.bind_contextvars(

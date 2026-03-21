@@ -38,7 +38,16 @@ async def domain_exception_handler(request: Request, exc: DomainError) -> JSONRe
         path=request.url.path,
     )
 
-    return JSONResponse(
-        status_code=status_code,
-        content={"error": {"type": type(exc).__name__, "message": str(exc)}},
-    )
+    # In production, hide implementation details from error responses.
+    # Full details are always available in server logs via the warning above.
+    from src.infrastructure.config.settings import settings
+
+    if settings.debug:
+        content = {"error": {"type": type(exc).__name__, "message": str(exc)}}
+    elif status_code in (404, 409):
+        # Client-facing errors: safe to expose the message for UX
+        content = {"error": {"message": str(exc)}}
+    else:
+        content = {"error": {"message": "A validation error occurred."}}
+
+    return JSONResponse(status_code=status_code, content=content)

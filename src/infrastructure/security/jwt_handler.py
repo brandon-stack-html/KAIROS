@@ -3,7 +3,7 @@
 Implements the application port using PyJWT.
 The application layer never imports from this module.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import jwt
 
@@ -13,7 +13,7 @@ from src.infrastructure.config.settings import settings
 
 class JwtTokenGenerator(ITokenGenerator):
     def generate(self, user_id: str, email: str) -> str:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         payload = {
             "sub": user_id,
             "email": email,
@@ -21,3 +21,8 @@ class JwtTokenGenerator(ITokenGenerator):
             "exp": now + timedelta(minutes=settings.jwt_expire_minutes),
         }
         return jwt.encode(payload, settings.secret_key, algorithm=settings.jwt_algorithm)
+
+
+def decode_token(token: str) -> dict:
+    """Decode and validate a JWT. Raises jwt.InvalidTokenError on failure."""
+    return jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
