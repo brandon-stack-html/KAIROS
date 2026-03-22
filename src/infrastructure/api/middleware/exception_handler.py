@@ -9,7 +9,13 @@ Error schema:
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from src.domain.shared.errors import ConflictError, DomainError, EntityNotFoundError
+from src.domain.organization.errors import InsufficientRoleError
+from src.domain.shared.errors import (
+    ConflictError,
+    DomainError,
+    EntityNotFoundError,
+    InvalidRefreshTokenError,
+)
 from src.infrastructure.api.logging import get_logger
 
 _logger = get_logger(__name__)
@@ -17,6 +23,8 @@ _logger = get_logger(__name__)
 _STATUS_MAP = {
     EntityNotFoundError: 404,
     ConflictError: 409,
+    InvalidRefreshTokenError: 401,
+    InsufficientRoleError: 403,
     DomainError: 400,
 }
 

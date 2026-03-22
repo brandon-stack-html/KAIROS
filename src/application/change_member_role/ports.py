@@ -1,0 +1,3 @@
+from src.application.create_organization.ports import IOrganizationUnitOfWork
+
+IChangeMemberRoleUnitOfWork = IOrganizationUnitOfWork

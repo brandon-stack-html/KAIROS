@@ -1,13 +1,11 @@
-from passlib.context import CryptContext
+import bcrypt
 
 from src.application.shared.password_hasher import AbstractPasswordHasher
-
-_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class BcryptPasswordHasher(AbstractPasswordHasher):
     def hash(self, plain: str) -> str:
-        return _ctx.hash(plain)
+        return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
 
     def verify(self, plain: str, hashed: str) -> bool:
-        return _ctx.verify(plain, hashed)
+        return bcrypt.checkpw(plain.encode(), hashed.encode())

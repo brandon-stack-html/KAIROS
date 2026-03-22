@@ -8,3 +8,7 @@ class EntityNotFoundError(DomainError):
 
 class ConflictError(DomainError):
     """Raised when an operation violates a uniqueness constraint. Maps to HTTP 409."""
+
+
+class InvalidRefreshTokenError(DomainError):
+    """Raised when a refresh token is missing, revoked, or expired. Maps to HTTP 401."""

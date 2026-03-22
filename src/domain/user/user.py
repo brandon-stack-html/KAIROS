@@ -10,9 +10,10 @@ Domain rules enforced here:
 import re
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from src.domain.shared.aggregate_root import AggregateRoot
+from src.domain.shared.tenant_id import TenantId
 from src.domain.shared.value_object import ValueObject
 from src.domain.user.errors import InvalidEmailError, InvalidUserNameError
 from src.domain.user.events import UserDeactivated, UserRegistered
@@ -75,19 +76,22 @@ class User(AggregateRoot):
     """User aggregate root.
 
     Field order matters for @dataclass inheritance:
-      id          – inherited from Entity (required, no default)
+      id             – inherited from Entity (required, no default)
       _domain_events – inherited from AggregateRoot (init=False, excluded)
-      email / name / hashed_password – required
+      email / name / hashed_password / tenant_id – required
       is_active / created_at – optional (have defaults)
+
+    tenant_id is TenantId | None so SQLAlchemy can reconstruct rows that
+    pre-date multi-tenancy (NULL in DB). New users always have a tenant_id.
     """
+
     id: UserId
     email: UserEmail
     name: UserName
     hashed_password: str
+    tenant_id: TenantId | None = None
     is_active: bool = True
-    created_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     @classmethod
     def register(
@@ -95,12 +99,14 @@ class User(AggregateRoot):
         email: UserEmail,
         name: UserName,
         hashed_password: str,
+        tenant_id: TenantId,
     ) -> "User":
         user = cls(
             id=UserId.generate(),
             email=email,
             name=name,
             hashed_password=hashed_password,
+            tenant_id=tenant_id,
         )
         user.add_domain_event(
             UserRegistered(user_id=user.id.value, email=email.value)

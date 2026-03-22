@@ -10,6 +10,10 @@ class UserCreateRequest(BaseModel):
     email: EmailStr
     name: str = Field(min_length=2, max_length=100)
     password: str = Field(min_length=8, max_length=128)
+    tenant_id: str = Field(
+        description="UUID v4 of the tenant this user belongs to.",
+        pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+    )
 
 
 class UserResponse(BaseModel):
@@ -26,4 +30,19 @@ class LoginRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str = Field(
+        description="UUID v4 refresh token issued at login or last refresh.",
+        pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+    )
+
+
+class LogoutRequest(BaseModel):
+    refresh_token: str = Field(
+        description="The refresh token to invalidate.",
+        pattern=r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+    )

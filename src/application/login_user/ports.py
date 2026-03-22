@@ -13,6 +13,11 @@ class ITokenGenerator(ABC):
     """
 
     @abstractmethod
-    def generate(self, user_id: str, email: str) -> str:
-        """Return a signed, self-contained access token."""
+    def generate(self, user_id: str, email: str, tenant_id: str) -> str:
+        """Return a signed, self-contained access token.
+
+        tenant_id is embedded as the 'tid' JWT claim so downstream
+        middleware and services can enforce tenant isolation without
+        an extra DB lookup.
+        """
         ...

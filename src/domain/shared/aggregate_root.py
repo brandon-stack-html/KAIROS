@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
-from .entity import Entity
 from .domain_event import DomainEvent
+from .entity import Entity
 
 TId = TypeVar("TId")
 

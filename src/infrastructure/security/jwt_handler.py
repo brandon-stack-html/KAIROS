@@ -12,11 +12,12 @@ from src.infrastructure.config.settings import settings
 
 
 class JwtTokenGenerator(ITokenGenerator):
-    def generate(self, user_id: str, email: str) -> str:
+    def generate(self, user_id: str, email: str, tenant_id: str) -> str:
         now = datetime.now(UTC)
         payload = {
             "sub": user_id,
             "email": email,
+            "tid": tenant_id,  # tenant claim — read by TenantMiddleware
             "iat": now,
             "exp": now + timedelta(minutes=settings.jwt_expire_minutes),
         }

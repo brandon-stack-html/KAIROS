@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from types import TracebackType
-from typing import Type
 
 
 class AbstractUnitOfWork(ABC):
@@ -9,7 +8,7 @@ class AbstractUnitOfWork(ABC):
 
     async def __aexit__(
         self,
-        exc_type: Type[BaseException] | None,
+        exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:

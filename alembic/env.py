@@ -13,14 +13,15 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+# ── 2. Import ALL table modules explicitly so autogenerate sees them ──
+# Add one import per aggregate as you create new tables.
+import src.infrastructure.persistence.sqlalchemy.tables.refresh_tokens_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.tenants_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.users_table  # noqa: F401
 from alembic import context
 
 # ── 1. Import shared metadata ─────────────────────────────────────────
 from src.infrastructure.persistence.sqlalchemy.database import metadata
-
-# ── 2. Import ALL table modules explicitly so autogenerate sees them ──
-# Add one import per aggregate as you create new tables.
-import src.infrastructure.persistence.sqlalchemy.tables.users_table  # noqa: F401
 
 # ── 3. Assign target metadata ─────────────────────────────────────────
 target_metadata = metadata

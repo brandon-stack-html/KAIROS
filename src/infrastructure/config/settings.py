@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -18,7 +20,16 @@ class Settings(BaseSettings):
     # JWT
     secret_key: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"
-    jwt_expire_minutes: int = 30  # reduced from 60 — use refresh tokens for longer sessions
+    jwt_expire_minutes: int = 30  # short-lived; rely on refresh tokens for longer sessions
+    refresh_token_ttl_days: int = 30  # configurable via REFRESH_TOKEN_TTL_DAYS env var
+
+    # Email
+    email_provider: Literal["resend", "console"] = "console"
+    resend_api_key: str | None = None
+    email_from: str = "noreply@example.com"
+
+    # Frontend (used to build links in emails)
+    frontend_url: str = "http://localhost:3000"
 
     @model_validator(mode="after")
     def validate_production_security(self) -> "Settings":

@@ -5,6 +5,7 @@ from src.application.register_user.handler import RegisterUserHandler
 from src.infrastructure.api.rate_limiter import limiter
 from src.infrastructure.api.schemas.user_schemas import UserCreateRequest, UserResponse
 from src.infrastructure.config.container import get_register_user_handler
+from src.infrastructure.config.settings import settings
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -28,6 +29,8 @@ async def register_user(
             email=str(body.email),
             name=body.name,
             password=body.password,
+            tenant_id=body.tenant_id,
+            app_name=settings.app_name,
         )
     )
     return UserResponse(id=user_id, email=str(body.email), name=body.name, is_active=True)

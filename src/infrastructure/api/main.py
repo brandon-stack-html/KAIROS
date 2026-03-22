@@ -9,6 +9,7 @@ from src.domain.shared.errors import DomainError
 from src.infrastructure.api.logging import configure_logging
 from src.infrastructure.api.middleware.exception_handler import domain_exception_handler
 from src.infrastructure.api.middleware.security_headers import SecurityHeadersMiddleware
+from src.infrastructure.api.middleware.tenant import TenantMiddleware
 from src.infrastructure.api.middleware.tracing import TracingMiddleware
 from src.infrastructure.api.rate_limiter import limiter
 from src.infrastructure.config.settings import settings
@@ -19,10 +20,27 @@ configure_logging(log_level="DEBUG" if settings.debug else "INFO")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 1. Register imperative mappers (idempotent).
-    from src.infrastructure.persistence.sqlalchemy.mappers.user_mapper import (
-        start_mappers,
+    from src.infrastructure.persistence.sqlalchemy.mappers.invitation_mapper import (
+        start_mappers as start_invitation_mappers,
     )
-    start_mappers()
+    from src.infrastructure.persistence.sqlalchemy.mappers.organization_mapper import (
+        start_mappers as start_organization_mappers,
+    )
+    from src.infrastructure.persistence.sqlalchemy.mappers.refresh_token_mapper import (
+        start_mappers as start_refresh_token_mappers,
+    )
+    from src.infrastructure.persistence.sqlalchemy.mappers.tenant_mapper import (
+        start_mappers as start_tenant_mappers,
+    )
+    from src.infrastructure.persistence.sqlalchemy.mappers.user_mapper import (
+        start_mappers as start_user_mappers,
+    )
+
+    start_tenant_mappers()        # must be before user (FK dependency)
+    start_user_mappers()
+    start_refresh_token_mappers() # depends on users
+    start_organization_mappers()  # depends on tenants + users
+    start_invitation_mappers()    # depends on organizations + users
 
     # 2. Create tables (development only — use Alembic in production).
     if settings.debug:
@@ -52,6 +70,7 @@ if settings.environment == "production":
     app.add_middleware(HTTPSRedirectMiddleware)
 
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(TenantMiddleware)
 app.add_middleware(TracingMiddleware)
 app.add_middleware(
     CORSMiddleware,
@@ -67,10 +86,11 @@ app.add_exception_handler(DomainError, domain_exception_handler)
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ── Routers ───────────────────────────────────────────────────────────
-from src.infrastructure.api.routers import auth, users  # noqa: E402
+from src.infrastructure.api.routers import auth, organizations, users  # noqa: E402
 
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(organizations.router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["ops"])

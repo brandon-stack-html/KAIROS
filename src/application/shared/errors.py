@@ -9,3 +9,8 @@ class NotFoundError(ApplicationError):
 
 class ConflictError(ApplicationError):
     pass
+
+
+class EmailConfigurationError(ApplicationError):
+    """Raised when email provider is misconfigured (e.g. missing API key)."""
+    pass
