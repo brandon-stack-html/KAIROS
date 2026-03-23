@@ -3,6 +3,7 @@
 UserNotFoundError → EntityNotFoundError → 404 (anti-enumeration: same code
 for both "user doesn't exist" and "wrong password").
 """
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession

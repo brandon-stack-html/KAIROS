@@ -1,8 +1,12 @@
 """organizations table — pure SQLAlchemy Table definition (imperative mapping)."""
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Table
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata
-from src.infrastructure.persistence.sqlalchemy.types import OrganizationIdType, TenantIdType
+from src.infrastructure.persistence.sqlalchemy.types import (
+    OrganizationIdType,
+    TenantIdType,
+)
 
 organizations_table = Table(
     "organizations",

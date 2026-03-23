@@ -1,4 +1,5 @@
 """Imperative mapping: tenants_table ──► domain Tenant entity."""
+
 from sqlalchemy.orm import class_mapper, registry
 from sqlalchemy.orm.exc import UnmappedClassError
 

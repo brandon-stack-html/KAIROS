@@ -3,6 +3,7 @@
 Stores tokens in a plain dict keyed by token UUID string.
 Thread-safety is not a concern in single-threaded async tests.
 """
+
 from dataclasses import replace
 
 from src.application.shared.refresh_token_store import AbstractRefreshTokenStore

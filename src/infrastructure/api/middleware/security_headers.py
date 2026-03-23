@@ -8,6 +8,7 @@ Headers added to every response:
 - Referrer-Policy: limit referrer information leakage
 - Permissions-Policy: disable sensitive browser APIs
 """
+
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response

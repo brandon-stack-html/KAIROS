@@ -5,6 +5,7 @@ Docs: https://resend.com/docs/api-reference/emails/send-email
 Retry: 2 additional attempts on 5xx responses, 1-second backoff.
 Timeout: 10 seconds per attempt.
 """
+
 import asyncio
 
 import httpx

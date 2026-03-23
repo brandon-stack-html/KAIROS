@@ -2,7 +2,6 @@
 
 All tests use InMemoryRefreshTokenStore + InMemoryUoW — no DB, no HTTP.
 """
-from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -12,8 +11,6 @@ from src.application.logout_user.handler import LogoutHandler
 from src.application.refresh_token.command import RefreshTokenCommand
 from src.application.refresh_token.handler import RefreshTokenHandler
 from src.application.register_user.ports import IUserUnitOfWork
-from src.application.shared.refresh_token_store import AbstractRefreshTokenStore
-from src.application.shared.unit_of_work import AbstractUnitOfWork
 from src.domain.shared.errors import InvalidRefreshTokenError
 from src.domain.shared.refresh_token import RefreshToken
 from src.domain.shared.tenant_id import TenantId
@@ -23,8 +20,8 @@ from src.infrastructure.persistence.in_memory.refresh_token_store import (
     InMemoryRefreshTokenStore,
 )
 
-
 # ── Test doubles ──────────────────────────────────────────────────────────────
+
 
 class _FakeTokenGenerator(ITokenGenerator):
     def generate(self, user_id: str, email: str, tenant_id: str) -> str:
@@ -53,7 +50,9 @@ class _FakeUserRepository(IUserRepository):
 
 
 class _FakeUoW(IUserUnitOfWork):
-    def __init__(self, store: InMemoryRefreshTokenStore, user: User | None = None) -> None:
+    def __init__(
+        self, store: InMemoryRefreshTokenStore, user: User | None = None
+    ) -> None:
         self.users = _FakeUserRepository(user)
         self.refresh_tokens = store
 
@@ -72,6 +71,7 @@ class _FakeUoW(IUserUnitOfWork):
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def _make_user() -> User:
     return User(
         id=UserId.generate(),
@@ -82,12 +82,15 @@ def _make_user() -> User:
     )
 
 
-def _make_token(user: User, *, ttl_days: int = 30, revoked: bool = False) -> RefreshToken:
+def _make_token(
+    user: User, *, ttl_days: int = 30, revoked: bool = False
+) -> RefreshToken:
     t = RefreshToken.issue(user_id=user.id, tenant_id=user.tenant_id, ttl_days=ttl_days)
     return t.revoke() if revoked else t
 
 
 # ── Tests: RefreshToken value object ─────────────────────────────────────────
+
 
 def test_refresh_token_is_not_expired_when_fresh():
     user = _make_user()
@@ -112,6 +115,7 @@ def test_revoke_returns_new_instance_with_is_revoked_true():
 
 # ── Tests: RefreshTokenHandler ────────────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_refresh_returns_new_tokens():
     user = _make_user()
@@ -122,7 +126,9 @@ async def test_refresh_returns_new_tokens():
     uow = _FakeUoW(store=store, user=user)
     handler = RefreshTokenHandler(uow=uow, token_generator=_FakeTokenGenerator())
 
-    access_token, new_refresh = await handler.handle(RefreshTokenCommand(token=old_token.token))
+    access_token, new_refresh = await handler.handle(
+        RefreshTokenCommand(token=old_token.token)
+    )
 
     assert access_token.startswith("access:")
     assert new_refresh != old_token.token
@@ -153,9 +159,9 @@ async def test_refresh_with_revoked_token_raises():
 
     uow = _FakeUoW(store=store, user=user)
     with pytest.raises(InvalidRefreshTokenError):
-        await RefreshTokenHandler(uow=uow, token_generator=_FakeTokenGenerator()).handle(
-            RefreshTokenCommand(token=revoked.token)
-        )
+        await RefreshTokenHandler(
+            uow=uow, token_generator=_FakeTokenGenerator()
+        ).handle(RefreshTokenCommand(token=revoked.token))
 
 
 @pytest.mark.asyncio
@@ -167,9 +173,9 @@ async def test_refresh_with_expired_token_raises():
 
     uow = _FakeUoW(store=store, user=user)
     with pytest.raises(InvalidRefreshTokenError):
-        await RefreshTokenHandler(uow=uow, token_generator=_FakeTokenGenerator()).handle(
-            RefreshTokenCommand(token=expired.token)
-        )
+        await RefreshTokenHandler(
+            uow=uow, token_generator=_FakeTokenGenerator()
+        ).handle(RefreshTokenCommand(token=expired.token))
 
 
 @pytest.mark.asyncio
@@ -179,12 +185,13 @@ async def test_refresh_with_unknown_token_raises():
 
     uow = _FakeUoW(store=store, user=user)
     with pytest.raises(InvalidRefreshTokenError):
-        await RefreshTokenHandler(uow=uow, token_generator=_FakeTokenGenerator()).handle(
-            RefreshTokenCommand(token="00000000-0000-4000-8000-000000000000")
-        )
+        await RefreshTokenHandler(
+            uow=uow, token_generator=_FakeTokenGenerator()
+        ).handle(RefreshTokenCommand(token="00000000-0000-4000-8000-000000000000"))
 
 
 # ── Tests: LogoutHandler ──────────────────────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_logout_revokes_token():
@@ -193,7 +200,9 @@ async def test_logout_revokes_token():
     t = _make_token(user)
     await store.save(t)
 
-    await LogoutHandler(uow=_FakeUoW(store=store)).handle(LogoutCommand(refresh_token=t.token))
+    await LogoutHandler(uow=_FakeUoW(store=store)).handle(
+        LogoutCommand(refresh_token=t.token)
+    )
 
     stored = await store.find_by_token(t.token)
     assert stored is not None and stored.is_revoked
@@ -208,4 +217,6 @@ async def test_logout_is_idempotent():
 
     handler = LogoutHandler(uow=_FakeUoW(store=store))
     await handler.handle(LogoutCommand(refresh_token=t.token))
-    await handler.handle(LogoutCommand(refresh_token=t.token))  # second call must not raise
+    await handler.handle(
+        LogoutCommand(refresh_token=t.token)
+    )  # second call must not raise

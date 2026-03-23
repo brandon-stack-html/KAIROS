@@ -1,4 +1,5 @@
 """InMemoryEmailSender — captures sent emails for test assertions."""
+
 from src.application.shared.email_sender import AbstractEmailSender, EmailMessage
 
 

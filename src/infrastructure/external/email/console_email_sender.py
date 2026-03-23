@@ -2,6 +2,7 @@
 
 Use in local development when no real email credentials are available.
 """
+
 import structlog
 
 from src.application.shared.email_sender import AbstractEmailSender, EmailMessage

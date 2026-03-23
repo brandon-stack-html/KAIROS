@@ -4,6 +4,7 @@ Covers: duplicate slug (409), invalid slug/name (422), missing JWT (401),
 nonexistent org/invitation (404), already accepted invitation (400),
 inviting existing member (409).
 """
+
 import uuid
 
 import pytest
@@ -18,7 +19,6 @@ from tests.helpers import (
     provision_tenant,
     register_and_login,
 )
-
 
 # ── CreateOrganization errors ────────────────────────────────────────────────
 
@@ -106,8 +106,12 @@ async def test_accept_invitation_for_existing_member_returns_409(
     """Inviting creates the invitation (201), but accepting fails with 409
     because add_member() detects the duplicate."""
     tid = await provision_tenant(db_session, "Dup Member Corp", "dup-member-corp")
-    owner_token = await register_and_login(client, tid, "owner@dupmember.com", name="Owner")
-    member_token = await register_and_login(client, tid, "member@dupmember.com", name="Member")
+    owner_token = await register_and_login(
+        client, tid, "owner@dupmember.com", name="Owner"
+    )
+    member_token = await register_and_login(
+        client, tid, "member@dupmember.com", name="Member"
+    )
 
     org = await create_org(client, owner_token, "Dup Member Org", "dup-member-org")
     inv1 = await invite_member(client, owner_token, org["id"], "member@dupmember.com")
@@ -149,8 +153,12 @@ async def test_accept_already_accepted_returns_400(
     db_session: AsyncSession, client: AsyncClient
 ):
     tid = await provision_tenant(db_session, "Double Corp", "double-corp")
-    owner_token = await register_and_login(client, tid, "owner@double.com", name="Owner")
-    member_token = await register_and_login(client, tid, "member@double.com", name="Member")
+    owner_token = await register_and_login(
+        client, tid, "owner@double.com", name="Owner"
+    )
+    member_token = await register_and_login(
+        client, tid, "member@double.com", name="Member"
+    )
 
     org = await create_org(client, owner_token, "Double Org", "double-org")
     inv = await invite_member(client, owner_token, org["id"], "member@double.com")

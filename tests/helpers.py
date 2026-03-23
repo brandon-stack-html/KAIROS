@@ -3,6 +3,7 @@
 These are plain async functions (not fixtures) so they compose cleanly
 in sequential E2E tests and reduce duplication across test files.
 """
+
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 

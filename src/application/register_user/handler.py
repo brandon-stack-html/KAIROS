@@ -7,6 +7,7 @@ Orchestrates:
   4. Persistence via Unit of Work
   5. Welcome email (fire-and-forget — never fails the request)
 """
+
 import structlog
 
 from src.application.register_user.command import RegisterUserCommand

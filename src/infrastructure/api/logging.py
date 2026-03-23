@@ -4,6 +4,7 @@ Call configure_logging() once at app startup.
 Use get_logger() anywhere in the infrastructure layer.
 Domain and application layers must NOT import this module.
 """
+
 import logging
 
 import structlog

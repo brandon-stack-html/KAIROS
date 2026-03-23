@@ -11,6 +11,7 @@ Public routes (no tenant enforcement):
   - POST /api/v1/auth/login
   - POST /api/v1/users   (registration — tenant_id comes from body)
 """
+
 import jwt
 import structlog
 from fastapi.responses import JSONResponse
@@ -23,21 +24,29 @@ from src.infrastructure.security.jwt_handler import decode_token
 _PUBLIC_PATHS: set[tuple[str, str]] = {
     ("GET", "/health"),
     ("POST", "/api/v1/auth/login"),
-    ("POST", "/api/v1/auth/refresh"),   # uses refresh token, not JWT
-    ("POST", "/api/v1/auth/logout"),    # token revocation — no JWT needed
+    ("POST", "/api/v1/auth/refresh"),  # uses refresh token, not JWT
+    ("POST", "/api/v1/auth/logout"),  # token revocation — no JWT needed
     ("POST", "/api/v1/users"),
-    ("POST", "/api/v1/users/"),         # trailing-slash variant
+    ("POST", "/api/v1/users/"),  # trailing-slash variant
 }
+
+_PUBLIC_PREFIXES: tuple[str, ...] = (
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+    "/api/v1/tenants",  # tenant lookup + creation are public (pre-auth)
+)
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        route_key = (request.method.upper(), request.url.path)
+        path = request.url.path
+        route_key = (request.method.upper(), path)
 
         # Skip tenant enforcement for public routes
-        if route_key in _PUBLIC_PATHS:
+        if route_key in _PUBLIC_PATHS or path.startswith(_PUBLIC_PREFIXES):
             return await call_next(request)
 
         # Extract Bearer token
@@ -45,7 +54,9 @@ class TenantMiddleware(BaseHTTPMiddleware):
         if not auth_header.startswith("Bearer "):
             return JSONResponse(
                 status_code=401,
-                content={"error": {"message": "Authorization header missing or malformed."}},
+                content={
+                    "error": {"message": "Authorization header missing or malformed."}
+                },
             )
 
         token = auth_header.split(" ", 1)[1]

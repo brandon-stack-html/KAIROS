@@ -5,6 +5,7 @@ One sequential test that exercises the complete workflow:
 
 Uses the same conftest.py fixtures (SQLite in-memory, handler overrides).
 """
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -81,7 +82,7 @@ async def test_full_user_journey(
     assert resp.status_code == 200, resp.text
     tokens_b = resp.json()
     token_b = tokens_b["access_token"]
-    refresh_token_b = tokens_b["refresh_token"]
+    tokens_b["refresh_token"]
     user_b_id = get_user_id_from_token(token_b)
 
     # ── Step 7: Invite User B ────────────────────────────────────────────

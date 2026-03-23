@@ -1,12 +1,13 @@
 """Driven ports for the Organization bounded context."""
+
 from abc import ABC, abstractmethod
 
 from src.domain.organization.invitation import Invitation
 from src.domain.organization.organization import Organization
-from src.domain.shared.organization_id import OrganizationId
 from src.domain.shared.invitation_id import InvitationId
+from src.domain.shared.organization_id import OrganizationId
 from src.domain.shared.tenant_id import TenantId
-from src.domain.user.user import UserId, UserEmail
+from src.domain.user.user import UserEmail, UserId
 
 
 class IOrganizationRepository(ABC):

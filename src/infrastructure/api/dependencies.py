@@ -7,6 +7,7 @@ Use get_current_user in protected routes:
         user_id = payload["sub"]
         ...
 """
+
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer

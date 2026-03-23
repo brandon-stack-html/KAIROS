@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     # Web framework
-    "fastapi>=0.115.0",
+    "fastapi[standard]>=0.115.0",
     "uvicorn[standard]>=0.30.0",
     # ORM + async drivers
     "sqlalchemy[asyncio]>=2.0.0",

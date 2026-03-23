@@ -6,9 +6,11 @@ JSON error envelope. Routes never need their own try/except for domain errors.
 Error schema:
     {"error": {"type": "UserNotFoundError", "message": "User 'x' not found."}}
 """
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+from src.application.shared.errors import AiServiceError
 from src.domain.organization.errors import InsufficientRoleError
 from src.domain.shared.errors import (
     ConflictError,
@@ -26,7 +28,24 @@ _STATUS_MAP = {
     InvalidRefreshTokenError: 401,
     InsufficientRoleError: 403,
     DomainError: 400,
+    AiServiceError: 502,
 }
+
+
+async def ai_service_exception_handler(
+    request: Request, exc: Exception
+) -> JSONResponse:
+    """Handles AiServiceError → 502 Bad Gateway."""
+    _logger.warning(
+        "ai_service_error",
+        error_type=type(exc).__name__,
+        error_message=str(exc),
+        path=request.url.path,
+    )
+    return JSONResponse(
+        status_code=502,
+        content={"error": {"message": "AI service temporarily unavailable."}},
+    )
 
 
 async def domain_exception_handler(request: Request, exc: DomainError) -> JSONResponse:

@@ -7,6 +7,7 @@ Domain rules enforced here:
 - Raising UserRegistered / UserDeactivated domain events is the only
   way to signal state changes to the outside world.
 """
+
 import re
 import uuid
 from dataclasses import dataclass, field
@@ -18,14 +19,13 @@ from src.domain.shared.value_object import ValueObject
 from src.domain.user.errors import InvalidEmailError, InvalidUserNameError
 from src.domain.user.events import UserDeactivated, UserRegistered
 
-_EMAIL_RE = re.compile(
-    r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
-)
+_EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$")
 
 
 # ──────────────────────────────────────────────
 # Value Objects
 # ──────────────────────────────────────────────
+
 
 @dataclass(frozen=True)
 class UserId(ValueObject):
@@ -71,6 +71,7 @@ class UserName(ValueObject):
 # Aggregate Root
 # ──────────────────────────────────────────────
 
+
 @dataclass(eq=False)
 class User(AggregateRoot):
     """User aggregate root.
@@ -108,9 +109,7 @@ class User(AggregateRoot):
             hashed_password=hashed_password,
             tenant_id=tenant_id,
         )
-        user.add_domain_event(
-            UserRegistered(user_id=user.id.value, email=email.value)
-        )
+        user.add_domain_event(UserRegistered(user_id=user.id.value, email=email.value))
         return user
 
     def deactivate(self) -> None:

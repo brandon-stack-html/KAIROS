@@ -15,12 +15,18 @@ class Settings(BaseSettings):
     database_url: str = "sqlite+aiosqlite:///./dev.db"
 
     # CORS — comma-separated list or JSON array in env var ALLOWED_ORIGINS
-    allowed_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    allowed_origins: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:4173",
+    ]
 
     # JWT
     secret_key: str = "change-me-in-production"
     jwt_algorithm: str = "HS256"
-    jwt_expire_minutes: int = 30  # short-lived; rely on refresh tokens for longer sessions
+    jwt_expire_minutes: int = (
+        30  # short-lived; rely on refresh tokens for longer sessions
+    )
     refresh_token_ttl_days: int = 30  # configurable via REFRESH_TOKEN_TTL_DAYS env var
 
     # Email
@@ -30,6 +36,10 @@ class Settings(BaseSettings):
 
     # Frontend (used to build links in emails)
     frontend_url: str = "http://localhost:3000"
+
+    # AI summary (OpenRouter)
+    openrouter_api_key: str | None = None
+    ai_model: str = "openai/gpt-4o-mini"
 
     @model_validator(mode="after")
     def validate_production_security(self) -> "Settings":

@@ -3,6 +3,7 @@
 Not an aggregate root; lifecycle is managed by Organization.
 NOT frozen — SQLAlchemy imperative mapper sets attributes on reconstruction.
 """
+
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 

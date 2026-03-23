@@ -6,13 +6,18 @@ aggregate's _memberships collection is always populated from DB.
 Call start_mappers() exactly once at application startup, AFTER
 start_tenant_mappers() and start_user_mappers() (FK dependencies).
 """
+
 from sqlalchemy.orm import class_mapper, registry, relationship
 from sqlalchemy.orm.exc import UnmappedClassError
 
 from src.domain.organization.membership import Membership
 from src.domain.organization.organization import Organization
-from src.infrastructure.persistence.sqlalchemy.tables.memberships_table import memberships_table
-from src.infrastructure.persistence.sqlalchemy.tables.organizations_table import organizations_table
+from src.infrastructure.persistence.sqlalchemy.tables.memberships_table import (
+    memberships_table,
+)
+from src.infrastructure.persistence.sqlalchemy.tables.organizations_table import (
+    organizations_table,
+)
 
 _mapper_registry = registry()
 _mapped = False
@@ -46,7 +51,7 @@ def start_mappers() -> None:
                         organizations_table.c.id == memberships_table.c.org_id
                     ),
                     foreign_keys=[memberships_table.c.org_id],
-                    lazy="selectin",   # load memberships automatically with org
+                    lazy="selectin",  # load memberships automatically with org
                     cascade="all, delete-orphan",
                 )
             },

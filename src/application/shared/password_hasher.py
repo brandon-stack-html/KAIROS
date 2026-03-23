@@ -4,6 +4,7 @@ Hashing is a side-effect-free operation, but it depends on a crypto
 library (passlib/bcrypt) which is an infrastructure concern. We define
 the interface here so use-case handlers stay infrastructure-agnostic.
 """
+
 from abc import ABC, abstractmethod
 
 

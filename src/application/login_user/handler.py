@@ -9,6 +9,7 @@ Orchestrates:
 Raises UserNotFoundError for both "user does not exist" and "wrong password"
 to avoid leaking user enumeration information.
 """
+
 from src.application.login_user.command import LoginUserCommand
 from src.application.login_user.ports import ITokenGenerator
 from src.application.register_user.ports import IUserUnitOfWork
@@ -36,7 +37,9 @@ class LoginUserHandler:
             email = UserEmail(command.email)
             user = await self._uow.users.find_by_email(email)
 
-            if user is None or not self._hasher.verify(command.password, user.hashed_password):
+            if user is None or not self._hasher.verify(
+                command.password, user.hashed_password
+            ):
                 raise UserNotFoundError(command.email)
 
             access_token = self._token_generator.generate(

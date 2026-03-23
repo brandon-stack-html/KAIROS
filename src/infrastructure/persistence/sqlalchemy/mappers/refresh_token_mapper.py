@@ -1,4 +1,5 @@
 """Imperative SQLAlchemy mapper for RefreshToken."""
+
 from sqlalchemy.orm import registry
 
 from src.domain.shared.refresh_token import RefreshToken

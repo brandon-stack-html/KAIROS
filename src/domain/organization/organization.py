@@ -11,16 +11,11 @@ Domain rules enforced here:
 
 NOT frozen — SQLAlchemy imperative mapper sets attributes on reconstruction.
 """
+
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
-from src.domain.shared.aggregate_root import AggregateRoot
-from src.domain.shared.membership_id import MembershipId
-from src.domain.shared.organization_id import OrganizationId
-from src.domain.shared.role import Role
-from src.domain.shared.tenant_id import TenantId
-from src.domain.user.user import UserId
 from src.domain.organization.errors import (
     CannotRemoveLastOwnerError,
     InsufficientRoleError,
@@ -37,6 +32,12 @@ from src.domain.organization.events import (
     OrganizationDissolved,
 )
 from src.domain.organization.membership import Membership
+from src.domain.shared.aggregate_root import AggregateRoot
+from src.domain.shared.membership_id import MembershipId
+from src.domain.shared.organization_id import OrganizationId
+from src.domain.shared.role import Role
+from src.domain.shared.tenant_id import TenantId
+from src.domain.user.user import UserId
 
 _SLUG_RE = re.compile(r"^[a-z0-9]([a-z0-9\-]{0,61}[a-z0-9])?$")
 
@@ -138,9 +139,7 @@ class Organization(AggregateRoot):
         """Add a user as a member. Validates inviter's role."""
         inviter = self._get_membership(inviter_id)
         if not inviter.role.can_invite():
-            raise InsufficientRoleError(
-                f"Role '{inviter.role}' cannot invite members."
-            )
+            raise InsufficientRoleError(f"Role '{inviter.role}' cannot invite members.")
         if self._find_membership(user_id) is not None:
             raise MemberAlreadyExistsError(user_id.value, self.id.value)
 
@@ -190,7 +189,11 @@ class Organization(AggregateRoot):
         old_role = target.role
 
         # Prevent demoting the last owner
-        if old_role is Role.OWNER and new_role is not Role.OWNER and self._owner_count() <= 1:
+        if (
+            old_role is Role.OWNER
+            and new_role is not Role.OWNER
+            and self._owner_count() <= 1
+        ):
             raise CannotRemoveLastOwnerError()
 
         target.role = new_role

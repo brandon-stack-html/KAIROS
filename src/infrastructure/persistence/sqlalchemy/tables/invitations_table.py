@@ -1,12 +1,13 @@
 """invitations table — pending invitations to join an organization."""
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Table
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata
 from src.infrastructure.persistence.sqlalchemy.types import (
     InvitationIdType,
     RoleType,
-    UserIdType,
     UserEmailType,
+    UserIdType,
 )
 
 invitations_table = Table(
@@ -15,7 +16,7 @@ invitations_table = Table(
     Column("id", InvitationIdType, primary_key=True),
     Column(
         "org_id",
-        String(36),           # FK — plain string, no VO needed on child entity
+        String(36),  # FK — plain string, no VO needed on child entity
         ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

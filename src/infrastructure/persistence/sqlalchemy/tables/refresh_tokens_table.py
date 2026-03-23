@@ -3,6 +3,7 @@
 No ORM class here. Mapping to the domain RefreshToken is done
 imperatively in mappers/refresh_token_mapper.py.
 """
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Table
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata

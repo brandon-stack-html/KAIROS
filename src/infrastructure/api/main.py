@@ -5,9 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from src.application.shared.errors import AiServiceError
 from src.domain.shared.errors import DomainError
 from src.infrastructure.api.logging import configure_logging
-from src.infrastructure.api.middleware.exception_handler import domain_exception_handler
+from src.infrastructure.api.middleware.exception_handler import (
+    ai_service_exception_handler,
+    domain_exception_handler,
+)
 from src.infrastructure.api.middleware.security_headers import SecurityHeadersMiddleware
 from src.infrastructure.api.middleware.tenant import TenantMiddleware
 from src.infrastructure.api.middleware.tracing import TracingMiddleware
@@ -20,11 +24,20 @@ configure_logging(log_level="DEBUG" if settings.debug else "INFO")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 1. Register imperative mappers (idempotent).
+    from src.infrastructure.persistence.sqlalchemy.mappers.deliverable_mapper import (
+        start_mappers as start_deliverable_mappers,
+    )
     from src.infrastructure.persistence.sqlalchemy.mappers.invitation_mapper import (
         start_mappers as start_invitation_mappers,
     )
+    from src.infrastructure.persistence.sqlalchemy.mappers.invoice_mapper import (
+        start_mappers as start_invoice_mappers,
+    )
     from src.infrastructure.persistence.sqlalchemy.mappers.organization_mapper import (
         start_mappers as start_organization_mappers,
+    )
+    from src.infrastructure.persistence.sqlalchemy.mappers.project_mapper import (
+        start_mappers as start_project_mappers,
     )
     from src.infrastructure.persistence.sqlalchemy.mappers.refresh_token_mapper import (
         start_mappers as start_refresh_token_mappers,
@@ -36,11 +49,14 @@ async def lifespan(app: FastAPI):
         start_mappers as start_user_mappers,
     )
 
-    start_tenant_mappers()        # must be before user (FK dependency)
+    start_tenant_mappers()  # must be before user (FK dependency)
     start_user_mappers()
-    start_refresh_token_mappers() # depends on users
+    start_refresh_token_mappers()  # depends on users
     start_organization_mappers()  # depends on tenants + users
-    start_invitation_mappers()    # depends on organizations + users
+    start_invitation_mappers()  # depends on organizations + users
+    start_project_mappers()  # depends on organizations + tenants
+    start_deliverable_mappers()  # depends on projects + tenants
+    start_invoice_mappers()  # depends on organizations + tenants
 
     # 2. Create tables (development only — use Alembic in production).
     if settings.debug:
@@ -48,6 +64,7 @@ async def lifespan(app: FastAPI):
             engine,
             metadata,
         )
+
         async with engine.begin() as conn:
             await conn.run_sync(metadata.create_all)
 
@@ -67,6 +84,7 @@ app.state.limiter = limiter
 # HTTPS redirect — only in production to avoid breaking local dev & tests
 if settings.environment == "production":
     from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+
     app.add_middleware(HTTPSRedirectMiddleware)
 
 app.add_middleware(SecurityHeadersMiddleware)
@@ -82,15 +100,28 @@ app.add_middleware(
 )
 
 # ── Exception handlers ────────────────────────────────────────────────
+app.add_exception_handler(AiServiceError, ai_service_exception_handler)
 app.add_exception_handler(DomainError, domain_exception_handler)
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ── Routers ───────────────────────────────────────────────────────────
-from src.infrastructure.api.routers import auth, organizations, users  # noqa: E402
+from src.infrastructure.api.routers import (  # noqa: E402
+    auth,
+    deliverables,
+    invoices,
+    organizations,
+    projects,
+    tenants,
+    users,
+)
 
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(tenants.router, prefix="/api/v1")
 app.include_router(organizations.router, prefix="/api/v1")
+app.include_router(projects.router, prefix="/api/v1")
+app.include_router(deliverables.router, prefix="/api/v1")
+app.include_router(invoices.router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["ops"])

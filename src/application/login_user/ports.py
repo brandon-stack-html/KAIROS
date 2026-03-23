@@ -2,6 +2,7 @@
 
 The application layer defines what it needs; infrastructure provides it.
 """
+
 from abc import ABC, abstractmethod
 
 

@@ -2,11 +2,11 @@
 
 Pure domain tests — no database, no HTTP, no async.
 """
+
 import pytest
 
 from src.domain.user.errors import InvalidEmailError, InvalidUserNameError
 from src.domain.user.user import UserEmail, UserId, UserName
-
 
 # ── UserEmail ────────────────────────────────────────────────────────────────
 

@@ -11,6 +11,7 @@ Scenarios:
   4. TenantMiddleware returns 401 on protected routes without a valid tenant claim.
   5. Login returns a JWT that contains the 'tid' claim.
 """
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,6 +34,7 @@ _hasher = BcryptPasswordHasher()
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 async def _create_tenant(session: AsyncSession, name: str, slug: str) -> Tenant:
     repo = SqlAlchemyTenantRepository(session)
@@ -62,6 +64,7 @@ async def _register_user(
 
 # ── Test 1: Cross-tenant isolation ───────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_user_not_visible_across_tenants(db_session: AsyncSession):
     """A user registered under tenant_A must NOT be returned when querying as tenant_B."""
@@ -70,7 +73,8 @@ async def test_user_not_visible_across_tenants(db_session: AsyncSession):
 
     # Register user under tenant_A
     repo_a = SqlAlchemyUserRepository(db_session, tenant_id=tenant_a.id.value)
-    from src.domain.user.user import User, UserEmail, UserName
+    from src.domain.user.user import User, UserName
+
     user = User.register(
         email=UserEmail("alice@tenant-a.com"),
         name=UserName("Alice"),
@@ -88,12 +92,14 @@ async def test_user_not_visible_across_tenants(db_session: AsyncSession):
 
 # ── Test 2: Same-tenant visibility ───────────────────────────────────────────
 
+
 @pytest.mark.asyncio
 async def test_user_visible_within_own_tenant(db_session: AsyncSession):
     """A user is visible when queried within the same tenant context."""
     tenant = await _create_tenant(db_session, "Visible Corp", "visible-corp")
 
-    from src.domain.user.user import User, UserEmail, UserName
+    from src.domain.user.user import User, UserName
+
     user = User.register(
         email=UserEmail("bob@visible-corp.com"),
         name=UserName("Bob"),
@@ -110,6 +116,7 @@ async def test_user_visible_within_own_tenant(db_session: AsyncSession):
 
 
 # ── Test 3: HTTP registration injects tenant_id ───────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_http_registration_stores_tenant_id(client: AsyncClient):
@@ -151,15 +158,17 @@ async def test_http_registration_stores_tenant_id(client: AsyncClient):
 
 # ── Test 4: TenantMiddleware blocks protected routes without tid ───────────────
 
+
 @pytest.mark.asyncio
 async def test_protected_route_without_tenant_returns_401(client: AsyncClient):
     """A protected route with a JWT missing the 'tid' claim returns 401."""
+    # Forge a token WITHOUT the 'tid' claim
+    import datetime
+
     import jwt as pyjwt
 
     from src.infrastructure.config.settings import settings
 
-    # Forge a token WITHOUT the 'tid' claim
-    import datetime
     token = pyjwt.encode(
         {
             "sub": "00000000-0000-4000-8000-000000000001",
@@ -182,6 +191,7 @@ async def test_protected_route_without_tenant_returns_401(client: AsyncClient):
 
 
 # ── Test 5: Login JWT contains 'tid' claim ────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_login_jwt_contains_tenant_id(
@@ -213,7 +223,9 @@ async def test_login_jwt_contains_tenant_id(
     assert response.status_code == 200, response.text
 
     token = response.json()["access_token"]
-    payload = pyjwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
+    payload = pyjwt.decode(
+        token, settings.secret_key, algorithms=[settings.jwt_algorithm]
+    )
 
     assert "tid" in payload, "JWT is missing 'tid' claim"
     assert payload["tid"] == tenant.id.value

@@ -1,4 +1,5 @@
 """Pydantic v2 schemas for organization endpoints."""
+
 from pydantic import BaseModel, EmailStr, Field
 
 from src.domain.shared.role import Role

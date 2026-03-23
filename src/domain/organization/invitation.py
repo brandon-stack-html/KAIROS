@@ -6,18 +6,18 @@ aggregate (Organization) or emitted directly by the use case handler.
 
 NOT frozen — SQLAlchemy imperative mapper needs to set attributes.
 """
+
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 
-from src.domain.shared.entity import Entity
-from src.domain.shared.invitation_id import InvitationId
-from src.domain.shared.role import Role
 from src.domain.organization.errors import (
     InvitationAlreadyAcceptedError,
     InvitationExpiredError,
 )
-from src.domain.user.user import UserId, UserEmail
-
+from src.domain.shared.entity import Entity
+from src.domain.shared.invitation_id import InvitationId
+from src.domain.shared.role import Role
+from src.domain.user.user import UserEmail, UserId
 
 _INVITATION_TTL_DAYS = 7
 

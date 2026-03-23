@@ -3,17 +3,34 @@
 All factory functions are plain callables so they work both with
 FastAPI's Depends() and in plain unit/integration tests.
 """
+
 from src.application.accept_invitation.handler import AcceptInvitationHandler
+from src.application.approve_deliverable.handler import ApproveDeliverableHandler
 from src.application.change_member_role.handler import ChangeMemberRoleHandler
 from src.application.create_organization.handler import CreateOrganizationHandler
+from src.application.create_project.handler import CreateProjectHandler
+from src.application.create_tenant.handler import CreateTenantHandler
+from src.application.generate_client_update.handler import GenerateClientUpdateHandler
+from src.application.get_current_user.handler import GetCurrentUserHandler
+from src.application.get_organization.handler import GetOrganizationHandler
+from src.application.get_project.handler import GetProjectHandler
+from src.application.get_tenant_by_slug.handler import GetTenantBySlugHandler
 from src.application.invite_member.handler import InviteMemberHandler
+from src.application.issue_invoice.handler import IssueInvoiceHandler
+from src.application.list_deliverables.handler import ListDeliverablesHandler
+from src.application.list_invoices.handler import ListInvoicesHandler
 from src.application.list_organizations.handler import ListOrganizationsHandler
+from src.application.list_projects.handler import ListProjectsHandler
 from src.application.login_user.handler import LoginUserHandler
 from src.application.logout_user.handler import LogoutHandler
+from src.application.mark_invoice_paid.handler import MarkInvoicePaidHandler
 from src.application.refresh_token.handler import RefreshTokenHandler
 from src.application.register_user.handler import RegisterUserHandler
 from src.application.remove_member.handler import RemoveMemberHandler
+from src.application.request_changes.handler import RequestChangesHandler
+from src.application.shared.ai_service import IAiSummaryService
 from src.application.shared.email_sender import AbstractEmailSender
+from src.application.submit_deliverable.handler import SubmitDeliverableHandler
 from src.infrastructure.config.settings import settings
 from src.infrastructure.external.email.console_email_sender import ConsoleEmailSender
 from src.infrastructure.persistence.sqlalchemy.database import SessionLocal
@@ -39,7 +56,24 @@ def _build_email_sender() -> AbstractEmailSender:
     return ConsoleEmailSender()
 
 
+def _build_ai_service() -> IAiSummaryService:
+    if settings.openrouter_api_key:
+        from src.infrastructure.external.ai.openrouter_ai_service import (
+            OpenRouterAiService,
+        )
+
+        return OpenRouterAiService(
+            api_key=settings.openrouter_api_key,
+            model=settings.ai_model,
+            frontend_url=settings.frontend_url,
+        )
+    from src.infrastructure.persistence.in_memory.ai_service import InMemoryAiService
+
+    return InMemoryAiService()
+
+
 _email_sender: AbstractEmailSender = _build_email_sender()
+_ai_service: IAiSummaryService = _build_ai_service()
 
 
 # ── Per-request factories ─────────────────────────────────────────────
@@ -102,3 +136,63 @@ def get_change_member_role_handler() -> ChangeMemberRoleHandler:
 
 def get_list_organizations_handler() -> ListOrganizationsHandler:
     return ListOrganizationsHandler(uow=get_uow())
+
+
+def get_create_project_handler() -> CreateProjectHandler:
+    return CreateProjectHandler(uow=get_uow())
+
+
+def get_list_projects_handler() -> ListProjectsHandler:
+    return ListProjectsHandler(uow=get_uow())
+
+
+def get_submit_deliverable_handler() -> SubmitDeliverableHandler:
+    return SubmitDeliverableHandler(uow=get_uow())
+
+
+def get_approve_deliverable_handler() -> ApproveDeliverableHandler:
+    return ApproveDeliverableHandler(uow=get_uow())
+
+
+def get_request_changes_handler() -> RequestChangesHandler:
+    return RequestChangesHandler(uow=get_uow())
+
+
+def get_issue_invoice_handler() -> IssueInvoiceHandler:
+    return IssueInvoiceHandler(uow=get_uow())
+
+
+def get_mark_invoice_paid_handler() -> MarkInvoicePaidHandler:
+    return MarkInvoicePaidHandler(uow=get_uow())
+
+
+def get_generate_client_update_handler() -> GenerateClientUpdateHandler:
+    return GenerateClientUpdateHandler(uow=get_uow(), ai_service=_ai_service)
+
+
+def get_get_tenant_by_slug_handler() -> GetTenantBySlugHandler:
+    return GetTenantBySlugHandler(uow=get_uow())
+
+
+def get_create_tenant_handler() -> CreateTenantHandler:
+    return CreateTenantHandler(uow=get_uow())
+
+
+def get_current_user_handler() -> GetCurrentUserHandler:
+    return GetCurrentUserHandler(uow=get_uow())
+
+
+def get_get_organization_handler() -> GetOrganizationHandler:
+    return GetOrganizationHandler(uow=get_uow())
+
+
+def get_get_project_handler() -> GetProjectHandler:
+    return GetProjectHandler(uow=get_uow())
+
+
+def get_list_deliverables_handler() -> ListDeliverablesHandler:
+    return ListDeliverablesHandler(uow=get_uow())
+
+
+def get_list_invoices_handler() -> ListInvoicesHandler:
+    return ListInvoicesHandler(uow=get_uow())

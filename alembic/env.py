@@ -18,6 +18,12 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 import src.infrastructure.persistence.sqlalchemy.tables.refresh_tokens_table  # noqa: F401
 import src.infrastructure.persistence.sqlalchemy.tables.tenants_table  # noqa: F401
 import src.infrastructure.persistence.sqlalchemy.tables.users_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.organizations_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.memberships_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.invitations_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.projects_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.deliverables_table  # noqa: F401
+import src.infrastructure.persistence.sqlalchemy.tables.invoices_table  # noqa: F401
 from alembic import context
 
 # ── 1. Import shared metadata ─────────────────────────────────────────

@@ -1,9 +1,12 @@
 """Imperative mapping: invitations_table ──► domain Invitation entity."""
+
 from sqlalchemy.orm import class_mapper, registry
 from sqlalchemy.orm.exc import UnmappedClassError
 
 from src.domain.organization.invitation import Invitation
-from src.infrastructure.persistence.sqlalchemy.tables.invitations_table import invitations_table
+from src.infrastructure.persistence.sqlalchemy.tables.invitations_table import (
+    invitations_table,
+)
 
 _mapper_registry = registry()
 _mapped = False

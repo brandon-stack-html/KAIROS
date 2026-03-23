@@ -1,4 +1,5 @@
 """Unit tests — RegisterUserHandler sends welcome email."""
+
 import pytest
 
 from src.application.register_user.command import RegisterUserCommand
@@ -6,8 +7,8 @@ from src.application.register_user.handler import RegisterUserHandler
 from src.application.shared.email_sender import AbstractEmailSender, EmailMessage
 from src.infrastructure.persistence.in_memory.email_sender import InMemoryEmailSender
 
-
 # ── Minimal in-memory UoW stub ────────────────────────────────────────────────
+
 
 class _FakeUserRepo:
     def __init__(self):
@@ -22,7 +23,9 @@ class _FakeUserRepo:
 
 class _FakeRefreshTokenStore:
     async def save(self, token): ...
-    async def find(self, token_id): return None
+    async def find(self, token_id):
+        return None
+
     async def revoke(self, token_id): ...
 
 
@@ -51,6 +54,7 @@ class _FakeHasher:
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+
 def _make_handler(email_sender: AbstractEmailSender) -> RegisterUserHandler:
     return RegisterUserHandler(
         uow=_FakeUoW(),
@@ -71,6 +75,7 @@ def _cmd(**overrides) -> RegisterUserCommand:
 
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_successful_registration_sends_welcome_email():

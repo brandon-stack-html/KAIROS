@@ -8,6 +8,7 @@ This handler is wired to the event publisher in the composition root.
 The use case publishes the event; this handler sends the email.
 The use case itself remains unaware of email infrastructure.
 """
+
 import structlog
 
 from src.application.shared.email_sender import (
@@ -39,8 +40,7 @@ class EmailEventHandler:
                     "inviter_name": event.inviter_id,
                     "org_name": event.org_id,  # org name not in event — override as needed
                     "accept_url": (
-                        f"{self._frontend_url}"
-                        f"/invitations/{event.invitation_id}/accept"
+                        f"{self._frontend_url}/invitations/{event.invitation_id}/accept"
                     ),
                 },
             )

@@ -1,5 +1,6 @@
 class ApplicationError(Exception):
     """Base class for application-layer errors."""
+
     pass
 
 
@@ -13,4 +14,11 @@ class ConflictError(ApplicationError):
 
 class EmailConfigurationError(ApplicationError):
     """Raised when email provider is misconfigured (e.g. missing API key)."""
+
+    pass
+
+
+class AiServiceError(ApplicationError):
+    """Raised when the AI provider fails after all retries."""
+
     pass

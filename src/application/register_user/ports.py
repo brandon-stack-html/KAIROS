@@ -3,6 +3,7 @@
 Extends AbstractUnitOfWork with the repositories / stores that the
 auth flow needs so handlers remain fully infrastructure-agnostic.
 """
+
 from abc import ABC
 
 from src.application.shared.refresh_token_store import AbstractRefreshTokenStore

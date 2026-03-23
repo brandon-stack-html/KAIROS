@@ -5,6 +5,7 @@ EmailTemplate provides type-safe template identifiers.
 build_email() renders templates inline — no external files needed,
 keeping the boilerplate self-contained.
 """
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
@@ -44,7 +45,7 @@ _TEMPLATES: dict[EmailTemplate, dict[str, str]] = {
         "html": (
             "<p><strong>{inviter_name}</strong> te invita a unirte a "
             "<strong>{org_name}</strong>.</p>"
-            "<p><a href=\"{accept_url}\">Aceptar invitación</a></p>"
+            '<p><a href="{accept_url}">Aceptar invitación</a></p>'
         ),
         "text": (
             "{inviter_name} te invita a unirte a {org_name}.\n\n"
@@ -55,7 +56,7 @@ _TEMPLATES: dict[EmailTemplate, dict[str, str]] = {
         "subject": "Restablece tu contraseña",
         "html": (
             "<p>Solicitaste restablecer tu contraseña.</p>"
-            "<p><a href=\"{reset_url}\">Restablecer contraseña</a></p>"
+            '<p><a href="{reset_url}">Restablecer contraseña</a></p>'
         ),
         "text": "Solicitud de reset de contraseña: {reset_url}",
     },

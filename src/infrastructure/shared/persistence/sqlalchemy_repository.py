@@ -4,6 +4,7 @@ Provides base CRUD + paginated listing for any domain entity.
 Domain layer has zero knowledge of this class — it only knows
 the abstract repository interface (port) defined in domain/.
 """
+
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 

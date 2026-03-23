@@ -1,4 +1,5 @@
 """SqlAlchemyInvitationRepository."""
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +8,9 @@ from src.domain.organization.repository import IInvitationRepository
 from src.domain.shared.invitation_id import InvitationId
 from src.domain.shared.organization_id import OrganizationId
 from src.domain.user.user import UserEmail
-from src.infrastructure.shared.persistence.sqlalchemy_repository import SqlAlchemyRepository
+from src.infrastructure.shared.persistence.sqlalchemy_repository import (
+    SqlAlchemyRepository,
+)
 
 
 class SqlAlchemyInvitationRepository(
@@ -33,7 +36,9 @@ class SqlAlchemyInvitationRepository(
         result = await self._session.execute(
             select(Invitation)
             .where(Invitation.invitee_email == email)  # type: ignore[attr-defined]
-            .where(Invitation.org_id == org_id.value)  # org_id stored as str  # type: ignore[attr-defined]
+            .where(
+                Invitation.org_id == org_id.value
+            )  # org_id stored as str  # type: ignore[attr-defined]
             .where(Invitation.is_accepted.is_(False))  # type: ignore[attr-defined]
         )
         return result.scalar_one_or_none()

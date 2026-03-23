@@ -3,6 +3,7 @@
 Defined in the domain layer so that the domain dictates the contract;
 infrastructure implements it.
 """
+
 from abc import ABC, abstractmethod
 
 from src.domain.user.user import User, UserEmail, UserId

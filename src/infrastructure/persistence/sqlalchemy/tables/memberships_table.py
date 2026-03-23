@@ -1,4 +1,5 @@
 """memberships table — user membership in an organization."""
+
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Table, UniqueConstraint
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata
@@ -15,7 +16,7 @@ memberships_table = Table(
     Column("id", MembershipIdType, primary_key=True),
     Column(
         "org_id",
-        OrganizationIdType,   # TypeDecorator handles VO↔str; SA cascade sets this from org.id
+        OrganizationIdType,  # TypeDecorator handles VO↔str; SA cascade sets this from org.id
         ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,

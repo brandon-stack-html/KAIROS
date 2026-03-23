@@ -7,6 +7,7 @@ Domain rules enforced here:
 - is_active defaults to True on creation.
 - Raises TenantCreated domain event on provisioning.
 """
+
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime

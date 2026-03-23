@@ -6,6 +6,7 @@ within the current transaction so RLS policies can filter rows.
 For SQLite (used in tests) this is a no-op — tenant isolation is
 enforced at the application layer (repository WHERE clauses).
 """
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 

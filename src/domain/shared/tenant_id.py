@@ -5,6 +5,7 @@ Domain rules enforced here:
 - Must be a valid UUID v4 (lowercase canonical form).
 - Cannot be empty or None.
 """
+
 import re
 import uuid
 from dataclasses import dataclass
@@ -26,9 +27,7 @@ class TenantId(ValueObject):
         if not self.value:
             raise ValueError("TenantId cannot be empty.")
         if not _UUID4_RE.match(self.value.lower()):
-            raise ValueError(
-                f"TenantId must be a valid UUID v4, got: {self.value!r}"
-            )
+            raise ValueError(f"TenantId must be a valid UUID v4, got: {self.value!r}")
 
     @classmethod
     def generate(cls) -> "TenantId":

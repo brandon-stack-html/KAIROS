@@ -8,6 +8,7 @@ separate `id` field and is not an aggregate root).
 Note: NOT a frozen dataclass — SQLAlchemy's imperative mapper needs to
 set attributes during reconstruction from the DB.
 """
+
 import uuid
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime, timedelta

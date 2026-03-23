@@ -1,4 +1,5 @@
 """Ports for the refresh_token use case."""
+
 from abc import ABC, abstractmethod
 
 from src.application.refresh_token.command import RefreshTokenCommand

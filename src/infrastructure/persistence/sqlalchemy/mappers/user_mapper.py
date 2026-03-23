@@ -8,6 +8,7 @@ The domain User class itself has ZERO SQLAlchemy imports.
 
 Call start_mappers() exactly once at application startup.
 """
+
 from sqlalchemy.orm import class_mapper, registry
 from sqlalchemy.orm.exc import UnmappedClassError
 

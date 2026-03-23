@@ -1,4 +1,5 @@
 """ITenantRepository — driven port for tenant persistence."""
+
 from abc import ABC, abstractmethod
 
 from src.domain.shared.tenant_id import TenantId
@@ -18,5 +19,4 @@ class ITenantRepository(ABC):
         ...
 
     @abstractmethod
-    async def exists_by_slug(self, slug: str) -> bool:
-        ...
+    async def exists_by_slug(self, slug: str) -> bool: ...

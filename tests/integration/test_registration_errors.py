@@ -2,6 +2,7 @@
 
 Tests Pydantic schema validation (422) and domain errors (409).
 """
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession

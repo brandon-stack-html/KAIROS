@@ -3,6 +3,7 @@
 No error is raised if the token is already revoked or unknown,
 making logout idempotent (safe to call multiple times).
 """
+
 from src.application.logout_user.command import LogoutCommand
 from src.application.register_user.ports import IUserUnitOfWork
 

@@ -3,6 +3,7 @@
 The application layer defines this interface; infrastructure provides
 concrete implementations (SQLAlchemy, in-memory for tests, Redis, etc.).
 """
+
 from abc import ABC, abstractmethod
 
 from src.domain.shared.refresh_token import RefreshToken

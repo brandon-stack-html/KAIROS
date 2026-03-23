@@ -1,4 +1,5 @@
 """tenants table — pure SQLAlchemy Table definition (imperative mapping)."""
+
 from sqlalchemy import Boolean, Column, DateTime, String, Table
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata

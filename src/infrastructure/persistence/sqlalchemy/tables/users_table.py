@@ -3,6 +3,7 @@
 No ORM class here. The mapping to the domain User entity is done
 imperatively in mappers/user_mapper.py.
 """
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Table
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata

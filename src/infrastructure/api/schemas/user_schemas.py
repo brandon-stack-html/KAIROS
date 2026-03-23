@@ -3,6 +3,7 @@
 Validation lives here, NOT in the domain. The domain only
 receives already-parsed data via the application command.
 """
+
 from pydantic import BaseModel, EmailStr, Field
 
 

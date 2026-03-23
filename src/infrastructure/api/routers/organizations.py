@@ -1,4 +1,5 @@
 """Organizations router — all routes require a valid JWT."""
+
 from fastapi import APIRouter, Depends, Request, status
 
 from src.application.accept_invitation.command import AcceptInvitationCommand
@@ -7,14 +8,19 @@ from src.application.change_member_role.command import ChangeMemberRoleCommand
 from src.application.change_member_role.handler import ChangeMemberRoleHandler
 from src.application.create_organization.command import CreateOrganizationCommand
 from src.application.create_organization.handler import CreateOrganizationHandler
+from src.application.get_organization.command import GetOrganizationCommand
+from src.application.get_organization.handler import GetOrganizationHandler
 from src.application.invite_member.command import InviteMemberCommand
 from src.application.invite_member.handler import InviteMemberHandler
+from src.application.list_invoices.command import ListInvoicesCommand
+from src.application.list_invoices.handler import ListInvoicesHandler
 from src.application.list_organizations.command import ListOrganizationsCommand
 from src.application.list_organizations.handler import ListOrganizationsHandler
 from src.application.remove_member.command import RemoveMemberCommand
 from src.application.remove_member.handler import RemoveMemberHandler
 from src.infrastructure.api.dependencies import get_current_user
 from src.infrastructure.api.rate_limiter import limiter
+from src.infrastructure.api.schemas.invoice_schemas import InvoiceResponse
 from src.infrastructure.api.schemas.organization_schemas import (
     ChangeMemberRoleRequest,
     InvitationCreate,
@@ -27,7 +33,9 @@ from src.infrastructure.config.container import (
     get_accept_invitation_handler,
     get_change_member_role_handler,
     get_create_organization_handler,
+    get_get_organization_handler,
     get_invite_member_handler,
+    get_list_invoices_handler,
     get_list_organizations_handler,
     get_remove_member_handler,
 )
@@ -98,6 +106,58 @@ async def list_organizations(
         ListOrganizationsCommand(user_id=user_id, tenant_id=tenant_id)
     )
     return [_org_response(org) for org in orgs]
+
+
+@router.get(
+    "/{org_id}",
+    response_model=OrgResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get organization details",
+)
+@limiter.limit("60/minute")
+async def get_organization(
+    org_id: str,
+    request: Request,
+    payload: dict = Depends(get_current_user),
+    handler: GetOrganizationHandler = Depends(get_get_organization_handler),
+) -> OrgResponse:
+    tenant_id: str = request.state.tenant_id
+    org = await handler.handle(
+        GetOrganizationCommand(org_id=org_id, tenant_id=tenant_id)
+    )
+    return _org_response(org)
+
+
+@router.get(
+    "/{org_id}/invoices",
+    response_model=list[InvoiceResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List invoices for an organization",
+)
+@limiter.limit("60/minute")
+async def list_invoices(
+    org_id: str,
+    request: Request,
+    payload: dict = Depends(get_current_user),
+    handler: ListInvoicesHandler = Depends(get_list_invoices_handler),
+) -> list[InvoiceResponse]:
+    tenant_id: str = request.state.tenant_id
+    invoices = await handler.handle(
+        ListInvoicesCommand(org_id=org_id, tenant_id=tenant_id)
+    )
+    return [
+        InvoiceResponse(
+            id=inv.id.value,
+            title=inv.title,
+            amount=str(inv.amount),
+            org_id=inv.org_id.value,
+            tenant_id=inv.tenant_id.value,
+            status=inv.status.value,
+            created_at=inv.created_at.isoformat(),
+            paid_at=inv.paid_at.isoformat() if inv.paid_at else None,
+        )
+        for inv in invoices
+    ]
 
 
 @router.post(
@@ -214,6 +274,7 @@ async def change_member_role(
         )
     )
     from src.domain.user.user import UserId
+
     membership = next(m for m in org.memberships if m.user_id == UserId(user_id))
     return MemberResponse(
         user_id=membership.user_id.value,

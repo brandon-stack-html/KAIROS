@@ -1,5 +1,4 @@
 """Unit tests for EmailTemplate rendering (build_email)."""
-import pytest
 
 from src.application.shared.email_sender import EmailTemplate, build_email
 

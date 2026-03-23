@@ -1,4 +1,5 @@
 """Unit tests for the Organization aggregate — pure domain logic, no DB."""
+
 from datetime import UTC, datetime, timedelta
 
 import pytest

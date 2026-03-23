@@ -53,6 +53,11 @@ htmlcov/
 *.tmp
 .cache/
 
+# ── Planning & notes ─────────────────────────────────────────────────
+hackaton_plan.md
+*_plan.md
+*_notes.md
+
 # ── Docker ────────────────────────────────────────────────────────────
 .docker/
 

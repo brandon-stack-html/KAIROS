@@ -8,8 +8,8 @@ from src.application.refresh_token.command import RefreshTokenCommand
 from src.application.refresh_token.handler import RefreshTokenHandler
 from src.infrastructure.api.rate_limiter import limiter
 from src.infrastructure.api.schemas.user_schemas import (
-    LogoutRequest,
     LoginRequest,
+    LogoutRequest,
     RefreshRequest,
     TokenResponse,
 )

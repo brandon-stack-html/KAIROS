@@ -2,6 +2,7 @@
 
 These endpoints previously had ZERO test coverage.
 """
+
 import uuid
 
 import pytest
@@ -26,15 +27,25 @@ async def _setup_org_with_member(
 
     Returns (tenant_id, org_id, owner_token, member_token, owner_id, member_id).
     """
-    tid = await provision_tenant(db_session, f"Corp-{uuid.uuid4().hex[:6]}", f"corp-{uuid.uuid4().hex[:6]}")
-    owner_token = await register_and_login(client, tid, f"owner-{uuid.uuid4().hex[:6]}@test.com", name="Owner")
-    member_token = await register_and_login(client, tid, f"member-{uuid.uuid4().hex[:6]}@test.com", name="Member")
+    tid = await provision_tenant(
+        db_session, f"Corp-{uuid.uuid4().hex[:6]}", f"corp-{uuid.uuid4().hex[:6]}"
+    )
+    owner_token = await register_and_login(
+        client, tid, f"owner-{uuid.uuid4().hex[:6]}@test.com", name="Owner"
+    )
+    member_token = await register_and_login(
+        client, tid, f"member-{uuid.uuid4().hex[:6]}@test.com", name="Member"
+    )
 
     owner_id = get_user_id_from_token(owner_token)
     member_id = get_user_id_from_token(member_token)
 
-    org = await create_org(client, owner_token, "Test Org", f"test-org-{uuid.uuid4().hex[:6]}")
-    inv = await invite_member(client, owner_token, org["id"], f"member-{uuid.uuid4().hex[:6]}@test.com")
+    org = await create_org(
+        client, owner_token, "Test Org", f"test-org-{uuid.uuid4().hex[:6]}"
+    )
+    await invite_member(
+        client, owner_token, org["id"], f"member-{uuid.uuid4().hex[:6]}@test.com"
+    )
 
     # We need the member's actual email for the invitation, let me fix this approach
     # Actually, invite_member uses the email to create invitation, and accept uses the member's JWT
@@ -105,7 +116,9 @@ async def test_remove_nonexistent_member_returns_404(
 async def test_remove_last_owner_returns_400(
     db_session: AsyncSession, client: AsyncClient
 ):
-    _, org_id, owner_token, _, owner_id, _ = await _setup(db_session, client, "rm-owner")
+    _, org_id, owner_token, _, owner_id, _ = await _setup(
+        db_session, client, "rm-owner"
+    )
 
     resp = await client.delete(
         f"/api/v1/organizations/{org_id}/members/{owner_id}",
@@ -149,7 +162,9 @@ async def test_remove_from_nonexistent_org_returns_404(
 
 @pytest.mark.asyncio
 async def test_change_role_happy_path(db_session: AsyncSession, client: AsyncClient):
-    _, org_id, owner_token, _, _, member_id = await _setup(db_session, client, "role-ok")
+    _, org_id, owner_token, _, _, member_id = await _setup(
+        db_session, client, "role-ok"
+    )
 
     resp = await client.patch(
         f"/api/v1/organizations/{org_id}/members/{member_id}/role",
@@ -164,7 +179,9 @@ async def test_change_role_happy_path(db_session: AsyncSession, client: AsyncCli
 async def test_demote_last_owner_returns_400(
     db_session: AsyncSession, client: AsyncClient
 ):
-    _, org_id, owner_token, _, owner_id, _ = await _setup(db_session, client, "role-demote")
+    _, org_id, owner_token, _, owner_id, _ = await _setup(
+        db_session, client, "role-demote"
+    )
 
     resp = await client.patch(
         f"/api/v1/organizations/{org_id}/members/{owner_id}/role",
@@ -178,7 +195,9 @@ async def test_demote_last_owner_returns_400(
 async def test_member_cannot_change_role_returns_403(
     db_session: AsyncSession, client: AsyncClient
 ):
-    _, org_id, _, member_token, owner_id, _ = await _setup(db_session, client, "role-403")
+    _, org_id, _, member_token, owner_id, _ = await _setup(
+        db_session, client, "role-403"
+    )
 
     resp = await client.patch(
         f"/api/v1/organizations/{org_id}/members/{owner_id}/role",

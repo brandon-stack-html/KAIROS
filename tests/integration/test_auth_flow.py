@@ -3,15 +3,15 @@
 Tests run against SQLite in-memory via the test client fixture.
 All HTTP handlers are overridden in conftest to use the test session.
 """
+
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.shared.tenant_id import TenantId
 from src.domain.tenant.tenant import Tenant
 from src.infrastructure.persistence.sqlalchemy.tenant_repository import (
     SqlAlchemyTenantRepository,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # Reusable credentials
 _EMAIL = "auth-flow@example.com"
@@ -43,6 +43,7 @@ async def _setup_tenant_and_user(
 
 # ── Test 1: Login returns access_token + refresh_token ───────────────────────
 
+
 @pytest.mark.asyncio
 async def test_login_returns_both_tokens(db_session: AsyncSession, client: AsyncClient):
     """POST /auth/login must return access_token and refresh_token."""
@@ -63,8 +64,11 @@ async def test_login_returns_both_tokens(db_session: AsyncSession, client: Async
 
 # ── Test 2: Refresh returns new tokens ───────────────────────────────────────
 
+
 @pytest.mark.asyncio
-async def test_refresh_returns_new_tokens(db_session: AsyncSession, client: AsyncClient):
+async def test_refresh_returns_new_tokens(
+    db_session: AsyncSession, client: AsyncClient
+):
     """POST /auth/refresh must return a new access_token + a NEW refresh_token."""
     await _setup_tenant_and_user(db_session, client)
 
@@ -73,7 +77,7 @@ async def test_refresh_returns_new_tokens(db_session: AsyncSession, client: Asyn
         json={"email": _EMAIL, "password": _PASSWORD},
     )
     original_refresh = login_resp.json()["refresh_token"]
-    original_access = login_resp.json()["access_token"]
+    login_resp.json()["access_token"]
 
     refresh_resp = await client.post(
         "/api/v1/auth/refresh",
@@ -91,8 +95,11 @@ async def test_refresh_returns_new_tokens(db_session: AsyncSession, client: Asyn
 
 # ── Test 3: Used refresh token cannot be reused ───────────────────────────────
 
+
 @pytest.mark.asyncio
-async def test_used_refresh_token_returns_401(db_session: AsyncSession, client: AsyncClient):
+async def test_used_refresh_token_returns_401(
+    db_session: AsyncSession, client: AsyncClient
+):
     """A refresh token already consumed (rotated) must return 401."""
     await _setup_tenant_and_user(db_session, client)
 
@@ -118,6 +125,7 @@ async def test_used_refresh_token_returns_401(db_session: AsyncSession, client: 
 
 
 # ── Test 4: Logout revokes token, refresh fails afterwards ───────────────────
+
 
 @pytest.mark.asyncio
 async def test_logout_makes_refresh_token_invalid(
@@ -148,6 +156,7 @@ async def test_logout_makes_refresh_token_invalid(
 
 
 # ── Test 5: Bad UUID format rejected at schema level ────────────────────────
+
 
 @pytest.mark.asyncio
 async def test_refresh_with_invalid_uuid_returns_422(client: AsyncClient):

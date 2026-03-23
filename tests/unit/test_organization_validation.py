@@ -2,11 +2,11 @@
 
 Pure domain tests — no database, no HTTP, no async.
 """
+
 import pytest
 
 from src.domain.organization.errors import InvalidOrgNameError, InvalidOrgSlugError
 from src.domain.organization.organization import Organization
-from src.domain.shared.organization_id import OrganizationId
 from src.domain.shared.role import Role
 from src.domain.shared.tenant_id import TenantId
 from src.domain.user.user import UserId

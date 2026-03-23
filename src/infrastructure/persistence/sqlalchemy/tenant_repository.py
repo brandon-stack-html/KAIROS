@@ -18,9 +18,7 @@ class SqlAlchemyTenantRepository(SqlAlchemyRepository[Tenant], ITenantRepository
         return await self.get_by_id(tenant_id)
 
     async def find_by_slug(self, slug: str) -> Tenant | None:
-        result = await self._session.execute(
-            select(Tenant).where(Tenant.slug == slug)
-        )
+        result = await self._session.execute(select(Tenant).where(Tenant.slug == slug))
         return result.scalar_one_or_none()
 
     async def exists_by_slug(self, slug: str) -> bool:

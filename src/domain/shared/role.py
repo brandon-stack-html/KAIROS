@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class Role(str, Enum):
+class Role(StrEnum):
     """Member roles within an organization.
 
     Inherits from str so the value serializes cleanly to/from DB and JSON.

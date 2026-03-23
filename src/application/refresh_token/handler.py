@@ -12,6 +12,7 @@ Implements token rotation inside a single UoW transaction:
 Raises InvalidRefreshTokenError for any invalid state so the caller
 never learns whether the token was unknown, revoked, or expired.
 """
+
 from src.application.login_user.ports import ITokenGenerator
 from src.application.refresh_token.command import RefreshTokenCommand
 from src.application.register_user.ports import IUserUnitOfWork

@@ -2,6 +2,7 @@
 
 Tests run against SQLite in-memory via the test client fixture.
 """
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,9 +66,7 @@ async def test_create_invite_accept_membership(
     """Happy path: owner creates org, invites member, member accepts."""
     tid = await _provision_tenant(db_session, "Org Corp", "org-corp")
 
-    owner_token = await _register_and_login(
-        client, tid, "owner@org.com", name="Owner"
-    )
+    owner_token = await _register_and_login(client, tid, "owner@org.com", name="Owner")
     member_token = await _register_and_login(
         client, tid, "member@org.com", name="Member"
     )
@@ -118,8 +117,12 @@ async def test_tenant_isolation_list_organizations(
     tid_a = await _provision_tenant(db_session, "Tenant A", "tenant-a")
     tid_b = await _provision_tenant(db_session, "Tenant B", "tenant-b")
 
-    token_a = await _register_and_login(client, tid_a, "user-a@example.com", name="User A")
-    token_b = await _register_and_login(client, tid_b, "user-b@example.com", name="User B")
+    token_a = await _register_and_login(
+        client, tid_a, "user-a@example.com", name="User A"
+    )
+    token_b = await _register_and_login(
+        client, tid_b, "user-b@example.com", name="User B"
+    )
 
     # Tenant A creates an org
     resp = await client.post(
@@ -146,8 +149,12 @@ async def test_member_cannot_invite(db_session: AsyncSession, client: AsyncClien
     """A MEMBER role should receive 403 when trying to invite someone."""
     tid = await _provision_tenant(db_session, "Invite Corp", "invite-corp")
 
-    owner_token = await _register_and_login(client, tid, "owner2@invite.com", name="Owner2")
-    member_token = await _register_and_login(client, tid, "member2@invite.com", name="Member2")
+    owner_token = await _register_and_login(
+        client, tid, "owner2@invite.com", name="Owner2"
+    )
+    member_token = await _register_and_login(
+        client, tid, "member2@invite.com", name="Member2"
+    )
     outsider_email = "outsider@invite.com"
     await _register_and_login(client, tid, outsider_email, name="Outsider")
 
@@ -190,12 +197,12 @@ async def test_accept_expired_invitation_returns_400(
     db_session: AsyncSession, client: AsyncClient
 ):
     """Accepting an expired invitation should return 400."""
-    from datetime import timedelta
+    from datetime import UTC, datetime, timedelta
 
     from src.domain.organization.invitation import Invitation
     from src.domain.organization.organization import Organization
+    from src.domain.shared.invitation_id import InvitationId
     from src.domain.shared.role import Role
-    from src.domain.shared.tenant_id import TenantId
     from src.domain.user.user import UserEmail, UserId
     from src.infrastructure.persistence.sqlalchemy.invitation_repository import (
         SqlAlchemyInvitationRepository,
@@ -203,19 +210,22 @@ async def test_accept_expired_invitation_returns_400(
     from src.infrastructure.persistence.sqlalchemy.organization_repository import (
         SqlAlchemyOrganizationRepository,
     )
-    from src.domain.shared.invitation_id import InvitationId
-    from datetime import UTC, datetime
 
     tid_str = await _provision_tenant(db_session, "Expire Corp", "expire-corp")
     tid = TenantId.from_str(tid_str)
 
-    owner_token = await _register_and_login(client, tid_str, "owner3@exp.com", name="Owner3")
-    member_token = await _register_and_login(client, tid_str, "member3@exp.com", name="Member3")
+    owner_token = await _register_and_login(
+        client, tid_str, "owner3@exp.com", name="Owner3"
+    )
+    member_token = await _register_and_login(
+        client, tid_str, "member3@exp.com", name="Member3"
+    )
 
     # Create org directly via domain + repository (bypass UoW for setup)
     owner_id_str = None
-    import jwt as pyjwt
+
     from src.infrastructure.security.jwt_handler import decode_token
+
     owner_payload = decode_token(owner_token)
     owner_id_str = owner_payload["sub"]
 

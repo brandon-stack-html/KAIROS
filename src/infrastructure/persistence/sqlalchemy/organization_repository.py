@@ -1,15 +1,19 @@
 """SqlAlchemyOrganizationRepository — tenant-scoped organization queries."""
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.organization.membership import Membership
 from src.domain.organization.organization import Organization
 from src.domain.organization.repository import IOrganizationRepository
 from src.domain.shared.organization_id import OrganizationId
 from src.domain.shared.tenant_id import TenantId
 from src.domain.user.user import UserId
-from src.infrastructure.persistence.sqlalchemy.tables.memberships_table import memberships_table
-from src.infrastructure.shared.persistence.sqlalchemy_repository import SqlAlchemyRepository
+from src.infrastructure.persistence.sqlalchemy.tables.memberships_table import (
+    memberships_table,
+)
+from src.infrastructure.shared.persistence.sqlalchemy_repository import (
+    SqlAlchemyRepository,
+)
 
 
 class SqlAlchemyOrganizationRepository(
@@ -41,9 +45,7 @@ class SqlAlchemyOrganizationRepository(
         result = await self._session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def find_by_slug(
-        self, slug: str, tenant_id: TenantId
-    ) -> Organization | None:
+    async def find_by_slug(self, slug: str, tenant_id: TenantId) -> Organization | None:
         stmt = (
             select(Organization)
             .where(Organization.slug == slug)  # type: ignore[attr-defined]
