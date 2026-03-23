@@ -54,9 +54,10 @@ htmlcov/
 .cache/
 
 # ── Planning & notes ─────────────────────────────────────────────────
-hackaton_plan.md
 *_plan.md
 *_notes.md
+*-workflow.md
+skills-lock.json
 
 # ── Docker ────────────────────────────────────────────────────────────
 .docker/
