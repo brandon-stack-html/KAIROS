@@ -1,0 +1,60 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { deliverablesApi } from "@/lib/api/deliverables.api";
+import { queryKeys } from "@/constants/query-keys";
+import { getApiErrorMessage } from "@/lib/api/axios-instance";
+import { toast } from "sonner";
+import { CreateDeliverableDto } from "@/types/deliverable.types";
+
+export function useDeliverables(projectId: string) {
+  return useQuery({
+    queryKey: queryKeys.deliverables.byProject(projectId),
+    queryFn: () =>
+      deliverablesApi.listByProject(projectId).then((res) => res.data),
+    enabled: !!projectId,
+  });
+}
+
+export function useSubmitDeliverable(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateDeliverableDto) =>
+      deliverablesApi.submit(projectId, data).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.deliverables.byProject(projectId),
+      });
+      toast.success("Entregable enviado");
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useApproveDeliverable(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      deliverablesApi.approve(id).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.deliverables.byProject(projectId),
+      });
+      toast.success("Entregable aprobado");
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useRequestChanges(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      deliverablesApi.requestChanges(id).then((res) => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.deliverables.byProject(projectId),
+      });
+      toast.success("Cambios solicitados");
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}

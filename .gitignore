@@ -1,3 +1,10 @@
+# ── Frontend (Next.js) ────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.*.local
+
 # ── Python & environments ─────────────────────────────────────────────
 .venv/
 venv/

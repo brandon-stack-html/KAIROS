@@ -159,9 +159,72 @@ Python 3.12 · FastAPI · Uvicorn · SQLAlchemy async (imperative mapping) · Al
 
 ## Frontend (monorepo — `/frontend`)
 
-**Stack:** Next.js 15 (App Router) · Tailwind CSS 4 · shadcn/ui · TypeScript · Zustand · TanStack Query v5 · React Hook Form + Zod · Axios
+**Stack:** Next.js 16 (App Router) · Tailwind CSS 4 · shadcn/ui (base-ui) · TypeScript · Zustand · TanStack Query v5 · React Hook Form + Zod · Axios
 
 **Workflow:** see `kairos-frontend-workflow.md` (gitignored, local reference only)
+
+### Frontend Structure (Sprints 1-3 complete — build passing 2026-03-22)
+
+**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · **S4 Invoices+Stats+Settings ⬜**
+
+```
+frontend/src/
+├── app/
+│   ├── layout.tsx, providers.tsx, globals.css
+│   ├── (auth)/layout.tsx
+│   │   ├── select-workspace/page.tsx    # Tenant lookup por slug
+│   │   ├── login/page.tsx               # 2-step: tokens → getMe
+│   │   └── register/page.tsx            # Con tenant_id
+│   └── (dashboard)/layout.tsx           # AuthGuard + Sidebar
+│       ├── page.tsx                     # Dashboard (stats — Sprint 4)
+│       ├── organizations/
+│       │   ├── page.tsx                 # List orgs ✅
+│       │   ├── new/page.tsx             # Create form ✅
+│       │   └── [id]/
+│       │       ├── page.tsx             # Detail + members ✅
+│       │       └── invoices/page.tsx    # List invoices (Sprint 4 UI)
+│       ├── projects/
+│       │   ├── page.tsx                 # List projects ✅
+│       │   ├── new/page.tsx             # Create form ✅
+│       │   └── [id]/page.tsx            # Detail + deliverables + AI summary ✅
+│       └── settings/page.tsx            # Placeholder — Sprint 4
+├── components/
+│   ├── layout/app-sidebar.tsx, header.tsx
+│   ├── shared/auth-guard.tsx, status-badge.tsx, role-gate.tsx, confirm-dialog.tsx, empty-state.tsx
+│   ├── ui/ (shadcn base-ui: button, card, input, label, select, form, textarea,
+│   │        dialog, alert-dialog, dropdown-menu, sheet, sidebar, avatar, badge,
+│   │        breadcrumb, separator, skeleton, tooltip, sonner, table)
+│   ├── organizations/ (organization-card, organization-form, invite-member-dialog,
+│   │                   change-role-dialog, member-table) ✅
+│   ├── projects/ (project-card, project-form, project-summary) ✅
+│   └── deliverables/ (deliverable-card, deliverable-form, deliverable-list) ✅
+├── lib/
+│   ├── api/
+│   │   ├── axios-instance.ts            # Interceptors, token mgmt, error envelope
+│   │   ├── tenants.api.ts, auth.api.ts, organizations.api.ts
+│   │   ├── projects.api.ts, deliverables.api.ts, invoices.api.ts ✅ (7 services)
+│   └── validators/ (auth, organization, project, deliverable schemas — Zod v4)
+├── stores/auth.store.ts, ui.store.ts    # Zustand + _hasHydrated flag
+├── hooks/ (use-auth, use-organizations, use-projects, use-deliverables, use-mobile)
+├── types/ (7 files: auth, tenant, organization, project, deliverable, invoice, api)
+├── constants/ (routes, roles, query-keys, navigation)
+└── middleware.ts                        # Auth guard (proxy)
+```
+
+### Sprint 4 — Pendiente
+- **Facturas UI**: `invoices.api.ts` ya existe; falta `/organizations/[id]/invoices` completo (crear, listar, marcar pagado)
+- **Dashboard stats**: definir si endpoint nuevo o calculado en cliente
+- **Settings**: perfil de usuario + configuración tenant
+
+### Frontend Design Rules
+
+- **shadcn/ui v2 (base-ui)**: uses `render` prop, NOT `asChild` — e.g. `<SidebarMenuButton render={<Link href="/" />}>`
+- **Auth 2-step flow**: Login → tokens only → GET /users/me → user profile
+- **Register**: returns User only (no tokens) → redirect to /login
+- **Zustand hydration**: `_hasHydrated` flag prevents SSR mismatch
+- **Invoice amount**: always `string`, never `number`
+- **Error envelope**: `{ error: { message } }` → `getApiErrorMessage()` helper
+- **Refresh token rotation**: every refresh saves new token pair
 
 ## Backend Development Workflow
 
