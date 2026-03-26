@@ -163,9 +163,9 @@ Python 3.12 · FastAPI · Uvicorn · SQLAlchemy async (imperative mapping) · Al
 
 **Workflow:** see `kairos-frontend-workflow.md` (gitignored, local reference only)
 
-### Frontend Structure (Sprints 1-3 complete — build passing 2026-03-22)
+### Frontend Structure (Sprints 1-4 complete — build passing 2026-03-25)
 
-**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · **S4 Invoices+Stats+Settings ⬜**
+**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats+Settings ✅
 
 ```
 frontend/src/
@@ -176,18 +176,18 @@ frontend/src/
 │   │   ├── login/page.tsx               # 2-step: tokens → getMe
 │   │   └── register/page.tsx            # Con tenant_id
 │   └── (dashboard)/layout.tsx           # AuthGuard + Sidebar
-│       ├── page.tsx                     # Dashboard (stats — Sprint 4)
+│       ├── page.tsx                     # Dashboard — stats cards + recientes ✅
 │       ├── organizations/
 │       │   ├── page.tsx                 # List orgs ✅
 │       │   ├── new/page.tsx             # Create form ✅
 │       │   └── [id]/
 │       │       ├── page.tsx             # Detail + members ✅
-│       │       └── invoices/page.tsx    # List invoices (Sprint 4 UI)
+│       │       └── invoices/page.tsx    # Stats cards + tabla + crear + marcar pagada ✅
 │       ├── projects/
 │       │   ├── page.tsx                 # List projects ✅
 │       │   ├── new/page.tsx             # Create form ✅
 │       │   └── [id]/page.tsx            # Detail + deliverables + AI summary ✅
-│       └── settings/page.tsx            # Placeholder — Sprint 4
+│       └── settings/page.tsx            # Perfil read-only (nombre, email, estado, ws ID) ✅
 ├── components/
 │   ├── layout/app-sidebar.tsx, header.tsx
 │   ├── shared/auth-guard.tsx, status-badge.tsx, role-gate.tsx, confirm-dialog.tsx, empty-state.tsx
@@ -197,24 +197,25 @@ frontend/src/
 │   ├── organizations/ (organization-card, organization-form, invite-member-dialog,
 │   │                   change-role-dialog, member-table) ✅
 │   ├── projects/ (project-card, project-form, project-summary) ✅
-│   └── deliverables/ (deliverable-card, deliverable-form, deliverable-list) ✅
+│   ├── deliverables/ (deliverable-card, deliverable-form, deliverable-list) ✅
+│   └── invoices/ (invoice-form, invoice-table) ✅
 ├── lib/
 │   ├── api/
 │   │   ├── axios-instance.ts            # Interceptors, token mgmt, error envelope
 │   │   ├── tenants.api.ts, auth.api.ts, organizations.api.ts
 │   │   ├── projects.api.ts, deliverables.api.ts, invoices.api.ts ✅ (7 services)
-│   └── validators/ (auth, organization, project, deliverable schemas — Zod v4)
+│   └── validators/ (auth, organization, project, deliverable, invoice schemas — Zod v4)
 ├── stores/auth.store.ts, ui.store.ts    # Zustand + _hasHydrated flag
-├── hooks/ (use-auth, use-organizations, use-projects, use-deliverables, use-mobile)
+├── hooks/ (use-auth, use-organizations, use-projects, use-deliverables, use-invoices, use-mobile)
 ├── types/ (7 files: auth, tenant, organization, project, deliverable, invoice, api)
 ├── constants/ (routes, roles, query-keys, navigation)
 └── middleware.ts                        # Auth guard (proxy)
 ```
 
-### Sprint 4 — Pendiente
-- **Facturas UI**: `invoices.api.ts` ya existe; falta `/organizations/[id]/invoices` completo (crear, listar, marcar pagado)
-- **Dashboard stats**: definir si endpoint nuevo o calculado en cliente
-- **Settings**: perfil de usuario + configuración tenant
+### Sprint 4 — COMPLETO (2026-03-23)
+- **Facturas UI**: invoice-form, invoice-table, página con stats cards + tabla + marcar pagada
+- **Dashboard stats**: calculadas client-side (orgs count, proyectos activos, recientes)
+- **Settings**: perfil read-only (nombre, email, estado, workspace ID)
 
 ### Frontend Design Rules
 
@@ -225,6 +226,32 @@ frontend/src/
 - **Invoice amount**: always `string`, never `number`
 - **Error envelope**: `{ error: { message } }` → `getApiErrorMessage()` helper
 - **Refresh token rotation**: every refresh saves new token pair
+
+## Stitch MCP (Google)
+
+**Servidor activo en Claude Code** — genera y gestiona UI con IA de Google.
+
+```bash
+# Ya configurado en ~/.claude.json — no requiere reinstalación
+# API Key: X-Goog-Api-Key (no expira, no requiere OAuth)
+# URL: https://stitch.googleapis.com/mcp
+```
+
+### Herramientas disponibles
+
+| Tool | Descripción |
+|------|-------------|
+| `create_project` | Crea un nuevo proyecto de diseño UI |
+| `list_projects` | Lista todos los proyectos activos |
+| `get_project` | Detalles de un proyecto específico |
+| `list_screens` | Lista pantallas de un proyecto |
+| `get_screen` | Detalles de una pantalla |
+| `generate_screen_from_text` | **Genera UI desde prompt** (GEMINI_3_PRO / GEMINI_3_FLASH) |
+
+### Uso en Kairos
+
+- Usar `generate_screen_from_text` para prototipar nuevas páginas antes de implementarlas en Next.js
+- Si Stitch responde "Unauthenticated" → la API key expiró → reconfigurar con `claude mcp add`
 
 ## Backend Development Workflow
 
