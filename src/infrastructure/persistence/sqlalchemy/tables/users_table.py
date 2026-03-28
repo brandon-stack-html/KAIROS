@@ -4,7 +4,7 @@ No ORM class here. The mapping to the domain User entity is done
 imperatively in mappers/user_mapper.py.
 """
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Table
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Table, Text
 
 from src.infrastructure.persistence.sqlalchemy.database import metadata
 from src.infrastructure.persistence.sqlalchemy.types import (
@@ -28,6 +28,7 @@ users_table = Table(
         nullable=True,  # nullable for safe migration of pre-existing rows
         index=True,
     ),
+    Column("avatar_url", Text, nullable=True),
     Column("is_active", Boolean, nullable=False, default=True),
     Column("created_at", DateTime(timezone=True), nullable=False),
     # Composite index for tenant-scoped queries

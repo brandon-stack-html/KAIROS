@@ -8,7 +8,13 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  avatar_url: string | null;
   is_active: boolean;
+}
+
+export interface UpdateProfileDto {
+  full_name?: string;
+  avatar_url?: string;
 }
 
 export interface RegisterDto {

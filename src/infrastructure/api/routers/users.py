@@ -4,12 +4,19 @@ from src.application.get_current_user.command import GetCurrentUserCommand
 from src.application.get_current_user.handler import GetCurrentUserHandler
 from src.application.register_user.command import RegisterUserCommand
 from src.application.register_user.handler import RegisterUserHandler
+from src.application.update_user_profile.command import UpdateUserProfileCommand
+from src.application.update_user_profile.handler import UpdateUserProfileHandler
 from src.infrastructure.api.dependencies import get_current_user
 from src.infrastructure.api.rate_limiter import limiter
-from src.infrastructure.api.schemas.user_schemas import UserCreateRequest, UserResponse
+from src.infrastructure.api.schemas.user_schemas import (
+    UpdateUserProfileRequest,
+    UserCreateRequest,
+    UserResponse,
+)
 from src.infrastructure.config.container import (
     get_current_user_handler,
     get_register_user_handler,
+    get_update_user_profile_handler,
 )
 from src.infrastructure.config.settings import settings
 
@@ -65,5 +72,38 @@ async def get_me(
         id=user.id.value,
         email=user.email.value,
         name=user.name.value,
+        avatar_url=user.avatar_url,
+        is_active=user.is_active,
+    )
+
+
+@router.patch(
+    "/me",
+    response_model=UserResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Update the current user's profile",
+)
+@limiter.limit("30/minute")
+async def update_me(
+    request: Request,
+    body: UpdateUserProfileRequest,
+    payload: dict = Depends(get_current_user),
+    handler: UpdateUserProfileHandler = Depends(get_update_user_profile_handler),
+) -> UserResponse:
+    tenant_id: str = request.state.tenant_id
+    user_id: str = payload["sub"]
+    user = await handler.handle(
+        UpdateUserProfileCommand(
+            user_id=user_id,
+            tenant_id=tenant_id,
+            full_name=body.full_name,
+            avatar_url=body.avatar_url,
+        )
+    )
+    return UserResponse(
+        id=user.id.value,
+        email=user.email.value,
+        name=user.name.value,
+        avatar_url=user.avatar_url,
         is_active=user.is_active,
     )

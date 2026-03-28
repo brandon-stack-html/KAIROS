@@ -21,7 +21,13 @@ class UserResponse(BaseModel):
     id: str
     email: str
     name: str
+    avatar_url: str | None = None
     is_active: bool
+
+
+class UpdateUserProfileRequest(BaseModel):
+    full_name: str | None = Field(default=None, min_length=2, max_length=100)
+    avatar_url: str | None = Field(default=None, max_length=2048)
 
 
 class LoginRequest(BaseModel):

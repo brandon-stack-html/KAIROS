@@ -91,6 +91,7 @@ class User(AggregateRoot):
     name: UserName
     hashed_password: str
     tenant_id: TenantId | None = None
+    avatar_url: str | None = None
     is_active: bool = True
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
@@ -111,6 +112,17 @@ class User(AggregateRoot):
         )
         user.add_domain_event(UserRegistered(user_id=user.id.value, email=email.value))
         return user
+
+    def update_profile(
+        self,
+        *,
+        full_name: str | None = None,
+        avatar_url: str | None = None,
+    ) -> None:
+        if full_name is not None:
+            self.name = UserName(full_name)
+        if avatar_url is not None:
+            self.avatar_url = avatar_url
 
     def deactivate(self) -> None:
         if not self.is_active:

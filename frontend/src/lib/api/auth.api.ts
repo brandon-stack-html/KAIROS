@@ -3,6 +3,7 @@ import {
   RegisterDto,
   LoginDto,
   LoginResponse,
+  UpdateProfileDto,
   User,
 } from "@/types/auth.types";
 
@@ -18,4 +19,7 @@ export const authApi = {
     api.post("/auth/logout", { refresh_token: refreshToken }),
 
   getMe: () => api.get<User>("/users/me"),
+
+  updateProfile: (data: UpdateProfileDto) =>
+    api.patch<User>("/users/me", data),
 };

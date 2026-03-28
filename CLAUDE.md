@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 > **Kairos** — Client Portal for Freelancers.
-> Domains: User, Tenant, Organization, Project, Deliverable, Invoice, AI Summary.
+> Domains: User, Tenant, Organization, Project, Deliverable, Invoice, Conversation, Message.
 
 ## Commands
 
@@ -9,7 +9,7 @@
 # Backend
 uv sync                                                  # Install dependencies
 uv run uvicorn src.infrastructure.api.main:app --reload   # Dev server
-uv run pytest                                             # All 170 tests
+uv run pytest                                             # All 201 tests
 uv run pytest tests/path/to_test.py::test_name            # Single test
 uv run ruff check . --fix --unsafe-fixes                  # Lint + auto-fix
 uv run ruff format .                                      # Format
@@ -18,6 +18,7 @@ uv run alembic upgrade head                               # Run migrations
 # Frontend (inside /frontend)
 npm install                     # Install dependencies
 npm run dev                     # Dev server (port 3000)
+npm run build                   # Production build check
 ```
 
 ## Architecture
@@ -38,12 +39,14 @@ Domain never imports from application, api, or infrastructure.
 
 | Aggregate | Key entities | Statuses |
 |-----------|-------------|----------|
-| User | User, UserId, Email | — |
+| User | User, UserId, Email, avatar_url(optional) | — |
 | Tenant | Tenant, TenantId, slug | — |
 | Organization | Organization, Membership, Invitation, Role(OWNER/ADMIN/MEMBER) | — |
 | Project | Project, ProjectId | ACTIVE, COMPLETED |
 | Deliverable | Deliverable, DeliverableId | PENDING, APPROVED, CHANGES_REQUESTED |
 | Invoice | Invoice, InvoiceId, amount(Decimal) | DRAFT, SENT, PAID |
+| Conversation | Conversation, ConversationId, ConversationType(ORG\|PROJECT) | — |
+| Message | Message, MessageId, content(1–4000 chars) | — |
 
 ### Mapper registration order (critical — FK dependency)
 
@@ -57,7 +60,9 @@ start_organization_mappers()  # 4 — FK → tenants + users
 start_invitation_mappers()    # 5 — FK → organizations + users
 start_project_mappers()       # 6 — FK → organizations + tenants
 start_deliverable_mappers()   # 7 — FK → projects + tenants
-start_invoice_mappers()       # 8 — FK → organizations + tenants
+start_invoice_mappers()        # 8 — FK → organizations + tenants
+start_conversation_mappers()   # 9 — FK → organizations + projects
+start_message_mappers()        # 10 — FK → conversations
 ```
 
 ## Design Rules
@@ -105,6 +110,7 @@ start_invoice_mappers()       # 8 — FK → organizations + tenants
 | `POST` | `/api/v1/tenants` | ❌ | 5/min | CreateTenantHandler |
 | `POST` | `/api/v1/users/` | ❌ | 3/min | RegisterUserHandler |
 | `GET` | `/api/v1/users/me` | ✅ | 60/min | GetCurrentUserHandler |
+| `PATCH` | `/api/v1/users/me` | ✅ | 30/min | UpdateUserProfileHandler |
 | `POST` | `/api/v1/auth/login` | ❌ | 5/min | LoginUserHandler |
 | `POST` | `/api/v1/auth/refresh` | ❌ | 10/min | RefreshTokenHandler |
 | `POST` | `/api/v1/auth/logout` | ❌ | 10/min | LogoutHandler |
@@ -126,6 +132,13 @@ start_invoice_mappers()       # 8 — FK → organizations + tenants
 | `PATCH` | `/api/v1/deliverables/{id}/request-changes` | ✅ | 30/min | RequestChangesHandler |
 | `POST` | `/api/v1/organizations/{id}/invoices` | ✅ | 30/min | IssueInvoiceHandler |
 | `PATCH` | `/api/v1/invoices/{id}/paid` | ✅ | 30/min | MarkInvoicePaidHandler |
+| `POST` | `/api/v1/organizations/{id}/conversations` | ✅ | 30/min | CreateConversationHandler — **⚠️ router pendiente** |
+| `POST` | `/api/v1/projects/{id}/conversations` | ✅ | 30/min | CreateConversationHandler — **⚠️ router pendiente** |
+| `GET` | `/api/v1/organizations/{id}/conversations` | ✅ | 60/min | ListOrgConversationsHandler — **⚠️ router pendiente** |
+| `GET` | `/api/v1/conversations/{id}` | ✅ | 60/min | GetConversationHandler — **⚠️ router pendiente** |
+| `POST` | `/api/v1/conversations/{id}/messages` | ✅ | 30/min | SendMessageHandler — **⚠️ router pendiente** |
+| `GET` | `/api/v1/conversations/{id}/messages` | ✅ | 60/min | ListMessagesHandler — **⚠️ router pendiente** |
+| `DELETE` | `/api/v1/messages/{id}` | ✅ | 30/min | DeleteMessageHandler — **⚠️ router pendiente** |
 
 ## Error Response Format
 
@@ -163,9 +176,9 @@ Python 3.12 · FastAPI · Uvicorn · SQLAlchemy async (imperative mapping) · Al
 
 **Workflow:** see `kairos-frontend-workflow.md` (gitignored, local reference only)
 
-### Frontend Structure (Sprints 1-4 complete — build passing 2026-03-25)
+### Frontend Structure (Sprints 1-5 complete — build passing 2026-03-25)
 
-**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats+Settings ✅
+**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats ✅ · S5 Profile edit ✅
 
 ```
 frontend/src/
@@ -187,7 +200,7 @@ frontend/src/
 │       │   ├── page.tsx                 # List projects ✅
 │       │   ├── new/page.tsx             # Create form ✅
 │       │   └── [id]/page.tsx            # Detail + deliverables + AI summary ✅
-│       └── settings/page.tsx            # Perfil read-only (nombre, email, estado, ws ID) ✅
+│       └── settings/page.tsx            # Perfil editable: nombre + avatar_url; estado + ws ID ✅
 ├── components/
 │   ├── layout/app-sidebar.tsx, header.tsx
 │   ├── shared/auth-guard.tsx, status-badge.tsx, role-gate.tsx, confirm-dialog.tsx, empty-state.tsx
@@ -202,20 +215,18 @@ frontend/src/
 ├── lib/
 │   ├── api/
 │   │   ├── axios-instance.ts            # Interceptors, token mgmt, error envelope
-│   │   ├── tenants.api.ts, auth.api.ts, organizations.api.ts
+│   │   ├── auth.api.ts                  # register, login, refresh, logout, getMe, updateProfile
+│   │   ├── tenants.api.ts, organizations.api.ts
 │   │   ├── projects.api.ts, deliverables.api.ts, invoices.api.ts ✅ (7 services)
 │   └── validators/ (auth, organization, project, deliverable, invoice schemas — Zod v4)
 ├── stores/auth.store.ts, ui.store.ts    # Zustand + _hasHydrated flag
 ├── hooks/ (use-auth, use-organizations, use-projects, use-deliverables, use-invoices, use-mobile)
-├── types/ (7 files: auth, tenant, organization, project, deliverable, invoice, api)
+├── types/
+│   ├── auth.types.ts                    # User {id,email,name,avatar_url,is_active}, UpdateProfileDto
+│   ├── tenant, organization, project, deliverable, invoice, api types
 ├── constants/ (routes, roles, query-keys, navigation)
 └── middleware.ts                        # Auth guard (proxy)
 ```
-
-### Sprint 4 — COMPLETO (2026-03-23)
-- **Facturas UI**: invoice-form, invoice-table, página con stats cards + tabla + marcar pagada
-- **Dashboard stats**: calculadas client-side (orgs count, proyectos activos, recientes)
-- **Settings**: perfil read-only (nombre, email, estado, workspace ID)
 
 ### Frontend Design Rules
 
@@ -226,6 +237,20 @@ frontend/src/
 - **Invoice amount**: always `string`, never `number`
 - **Error envelope**: `{ error: { message } }` → `getApiErrorMessage()` helper
 - **Refresh token rotation**: every refresh saves new token pair
+- **Profile mutation**: `authApi.updateProfile()` → invalidate `queryKeys.users.me` on success
+
+### Sprint History
+
+| Sprint | Fecha | Descripción |
+|--------|-------|-------------|
+| S1 | — | Auth: login, register, select-workspace, token rotation |
+| S2 | — | Orgs: crear, listar, detalle, miembros, invitaciones, roles |
+| S3 | — | Projects + Deliverables + AI summary |
+| S4 | 2026-03-23 | Invoices UI + Dashboard stats |
+| S5 | 2026-03-25 | PATCH /users/me + settings editable + avatar_url |
+| S6-backend | 2026-03-25 | Dominio Conversation + Message — 6 use cases, repos, SA mappers (sin HTTP todavía) |
+| S6-frontend | ❌ pendiente | Chat UI: /messages, conversation-list, message-thread, message-input, tabs en org+project |
+| S7 | ❌ futuro | Document Management — nuevo dominio + storage (S3/R2) + upload UI |
 
 ## Stitch MCP (Google)
 
@@ -237,20 +262,38 @@ frontend/src/
 # URL: https://stitch.googleapis.com/mcp
 ```
 
+### Proyecto Kairos en Stitch
+
+**Project ID:** `15698315690922955783`
+**Design System:** "Kairos Dark Minimal" — Geist, dark mode, `#4ade80` green, `#0a0a0a` bg, `#111111` surface, round-8
+
+| Screen | ID |
+|--------|----|
+| Freelancer Dashboard | `4ddc9c61378045c6b95df087d7f2dbce` |
+| Client/Owner Dashboard | `ec963532bffc45ac92ae07d65b76a7f6` |
+| Chat / Mensajería | `2e330ec7680841e6abf36200863209fc` |
+| Project Detail + tabs | `d7a53dbd6ed645d7ab9fbed49b6367af` |
+| Document Management | `db08e94813294c8694d6b63cfa55b4aa` |
+| Settings & Profile | `0b1059ed4f674952a4226e7e5238b6f6` |
+| Login | `7c4acb2e21db4cd6a13002954ed86e54` |
+| Organization Detail | `9a90f9b591874fccb576a948ee4feb09` |
+| Invitation Acceptance | `ba632be606ba40b196869f2588f61250` |
+
 ### Herramientas disponibles
 
 | Tool | Descripción |
 |------|-------------|
 | `create_project` | Crea un nuevo proyecto de diseño UI |
 | `list_projects` | Lista todos los proyectos activos |
-| `get_project` | Detalles de un proyecto específico |
 | `list_screens` | Lista pantallas de un proyecto |
-| `get_screen` | Detalles de una pantalla |
-| `generate_screen_from_text` | **Genera UI desde prompt** (GEMINI_3_PRO / GEMINI_3_FLASH) |
+| `get_screen` | Detalles + HTML de una pantalla |
+| `generate_screen_from_text` | Genera UI desde prompt (`GEMINI_3_1_PRO` recomendado) |
+| `edit_screens` | Edita pantallas existentes |
 
 ### Uso en Kairos
 
-- Usar `generate_screen_from_text` para prototipar nuevas páginas antes de implementarlas en Next.js
+- Obtener screen: `get_screen` con `name: "projects/15698315690922955783/screens/{id}"`
+- Generar nueva pantalla: `generate_screen_from_text` con `projectId: "15698315690922955783"`
 - Si Stitch responde "Unauthenticated" → la API key expiró → reconfigurar con `claude mcp add`
 
 ## Backend Development Workflow
@@ -262,5 +305,3 @@ frontend/src/
 5. Create API route in `src/infrastructure/api/routers/`
 6. Run migrations: `uv run alembic upgrade head`
 7. Test: `uv run pytest`
-
-antes de compactar las conversaciones sube a engram lo mas importante de ellas
