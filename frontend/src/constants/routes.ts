@@ -5,7 +5,9 @@ export const ROUTES = {
   DASHBOARD: "/",
   ORGANIZATIONS: "/organizations",
   PROJECTS: "/projects",
+  MESSAGES: "/messages",
   SETTINGS: "/settings",
+  ACCEPT_INVITATION: "/accept-invitation",
 } as const;
 
 export const PUBLIC_ROUTES = [

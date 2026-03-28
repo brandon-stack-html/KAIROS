@@ -4,6 +4,11 @@ All factory functions are plain callables so they work both with
 FastAPI's Depends() and in plain unit/integration tests.
 """
 
+from src.application.get_dashboard_stats.handler import GetDashboardStatsHandler
+from src.application.delete_document.handler import DeleteDocumentHandler
+from src.application.download_document.handler import DownloadDocumentHandler
+from src.application.list_documents.handler import ListDocumentsHandler
+from src.application.upload_document.handler import UploadDocumentHandler
 from src.application.accept_invitation.handler import AcceptInvitationHandler
 from src.application.create_conversation.handler import CreateConversationHandler
 from src.application.delete_message.handler import DeleteMessageHandler
@@ -44,6 +49,7 @@ from src.infrastructure.persistence.sqlalchemy.database import SessionLocal
 from src.infrastructure.persistence.sqlalchemy.unit_of_work import SqlAlchemyUnitOfWork
 from src.infrastructure.security.jwt_handler import JwtTokenGenerator
 from src.infrastructure.security.password_hasher import BcryptPasswordHasher
+from src.infrastructure.storage.local_file_storage import LocalFileStorage
 
 # ── Singletons (stateless, safe to share) ────────────────────────────
 _password_hasher = BcryptPasswordHasher()
@@ -81,6 +87,7 @@ def _build_ai_service() -> IAiSummaryService:
 
 _email_sender: AbstractEmailSender = _build_email_sender()
 _ai_service: IAiSummaryService = _build_ai_service()
+_file_storage = LocalFileStorage(upload_dir=settings.upload_dir)
 
 
 # ── Per-request factories ─────────────────────────────────────────────
@@ -231,3 +238,23 @@ def get_delete_message_handler() -> DeleteMessageHandler:
 
 def get_list_messages_handler() -> ListMessagesHandler:
     return ListMessagesHandler(uow=get_uow())
+
+
+def get_upload_document_handler() -> UploadDocumentHandler:
+    return UploadDocumentHandler(uow=get_uow(), file_storage=_file_storage)
+
+
+def get_list_documents_handler() -> ListDocumentsHandler:
+    return ListDocumentsHandler(uow=get_uow())
+
+
+def get_delete_document_handler() -> DeleteDocumentHandler:
+    return DeleteDocumentHandler(uow=get_uow(), file_storage=_file_storage)
+
+
+def get_download_document_handler() -> DownloadDocumentHandler:
+    return DownloadDocumentHandler(uow=get_uow())
+
+
+def get_dashboard_stats_handler() -> GetDashboardStatsHandler:
+    return GetDashboardStatsHandler(uow=get_uow())

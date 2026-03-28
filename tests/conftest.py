@@ -39,6 +39,9 @@ def register_mappers():
     from src.infrastructure.persistence.sqlalchemy.mappers.conversation_mapper import (
         start_mappers as start_conversation_mappers,
     )
+    from src.infrastructure.persistence.sqlalchemy.mappers.document_mapper import (
+        start_mappers as start_document_mappers,
+    )
     from src.infrastructure.persistence.sqlalchemy.mappers.deliverable_mapper import (
         start_mappers as start_deliverable_mappers,
     )
@@ -77,6 +80,7 @@ def register_mappers():
     start_invoice_mappers()        # 8 — FK → organizations + tenants
     start_conversation_mappers()   # 9 — FK → organizations + projects
     start_message_mappers()        # 10 — FK → conversations
+    start_document_mappers()       # 11 — FK → organizations + projects
 
 
 # ── In-memory database ────────────────────────────────────────────────────────
@@ -130,6 +134,11 @@ async def client(
     email_sender,
 ) -> AsyncClient:
     """Async HTTP client with all UoW dependencies overridden to use the test DB."""
+    from src.application.get_dashboard_stats.handler import GetDashboardStatsHandler
+    from src.application.delete_document.handler import DeleteDocumentHandler
+    from src.application.download_document.handler import DownloadDocumentHandler
+    from src.application.list_documents.handler import ListDocumentsHandler
+    from src.application.upload_document.handler import UploadDocumentHandler
     from src.application.accept_invitation.handler import AcceptInvitationHandler
     from src.application.approve_deliverable.handler import ApproveDeliverableHandler
     from src.application.change_member_role.handler import ChangeMemberRoleHandler
@@ -160,6 +169,11 @@ async def client(
     from src.application.update_user_profile.handler import UpdateUserProfileHandler
     from src.infrastructure.api.main import app
     from src.infrastructure.config.container import (
+        get_dashboard_stats_handler,
+        get_delete_document_handler,
+        get_download_document_handler,
+        get_list_documents_handler,
+        get_upload_document_handler,
         get_accept_invitation_handler,
         get_approve_deliverable_handler,
         get_change_member_role_handler,
@@ -285,6 +299,29 @@ async def client(
     def override_get_update_user_profile_handler():
         return UpdateUserProfileHandler(uow=_uow())
 
+    def override_get_dashboard_stats_handler():
+        return GetDashboardStatsHandler(uow=_uow())
+
+    def override_get_upload_document_handler():
+        from src.infrastructure.persistence.in_memory.file_storage import (
+            InMemoryFileStorage,
+        )
+
+        return UploadDocumentHandler(uow=_uow(), file_storage=InMemoryFileStorage())
+
+    def override_get_list_documents_handler():
+        return ListDocumentsHandler(uow=_uow())
+
+    def override_get_delete_document_handler():
+        from src.infrastructure.persistence.in_memory.file_storage import (
+            InMemoryFileStorage,
+        )
+
+        return DeleteDocumentHandler(uow=_uow(), file_storage=InMemoryFileStorage())
+
+    def override_get_download_document_handler():
+        return DownloadDocumentHandler(uow=_uow())
+
     app.dependency_overrides[get_register_user_handler] = (
         override_get_register_user_handler
     )
@@ -356,6 +393,21 @@ async def client(
     )
     app.dependency_overrides[get_update_user_profile_handler] = (
         override_get_update_user_profile_handler
+    )
+    app.dependency_overrides[get_dashboard_stats_handler] = (
+        override_get_dashboard_stats_handler
+    )
+    app.dependency_overrides[get_upload_document_handler] = (
+        override_get_upload_document_handler
+    )
+    app.dependency_overrides[get_list_documents_handler] = (
+        override_get_list_documents_handler
+    )
+    app.dependency_overrides[get_delete_document_handler] = (
+        override_get_delete_document_handler
+    )
+    app.dependency_overrides[get_download_document_handler] = (
+        override_get_download_document_handler
     )
 
     async with AsyncClient(

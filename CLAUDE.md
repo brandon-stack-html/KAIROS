@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 > **Kairos** — Client Portal for Freelancers.
-> Domains: User, Tenant, Organization, Project, Deliverable, Invoice, Conversation, Message.
+> Domains: User, Tenant, Organization, Project, Deliverable, Invoice, Conversation, Message, Document.
 
 ## Commands
 
@@ -9,7 +9,7 @@
 # Backend
 uv sync                                                  # Install dependencies
 uv run uvicorn src.infrastructure.api.main:app --reload   # Dev server
-uv run pytest                                             # All 201 tests
+uv run pytest                                             # All 227 tests
 uv run pytest tests/path/to_test.py::test_name            # Single test
 uv run ruff check . --fix --unsafe-fixes                  # Lint + auto-fix
 uv run ruff format .                                      # Format
@@ -47,6 +47,7 @@ Domain never imports from application, api, or infrastructure.
 | Invoice | Invoice, InvoiceId, amount(Decimal) | DRAFT, SENT, PAID |
 | Conversation | Conversation, ConversationId, ConversationType(ORG\|PROJECT) | — |
 | Message | Message, MessageId, content(1–4000 chars) | — |
+| Document | Document, DocumentId, MAX_FILE_SIZE=10MB, ALLOWED_FILE_TYPES(9 MIME) | — |
 
 ### Mapper registration order (critical — FK dependency)
 
@@ -63,6 +64,7 @@ start_deliverable_mappers()   # 7 — FK → projects + tenants
 start_invoice_mappers()        # 8 — FK → organizations + tenants
 start_conversation_mappers()   # 9 — FK → organizations + projects
 start_message_mappers()        # 10 — FK → conversations
+start_document_mappers()       # 11 — FK → organizations + projects
 ```
 
 ## Design Rules
@@ -82,6 +84,12 @@ start_message_mappers()        # 10 — FK → conversations
 - **Alembic migrations**: use `sa.String(N)` in migration files, never TypeDecorators
 - **`InsufficientRoleError` → 403** in `_STATUS_MAP` before `DomainError` (MRO: subclasses first)
 - **`AiServiceError` → 502** as `ApplicationError`, not `DomainError`
+- **File storage outside UoW**: `IFileStorage.delete()` called AFTER `async with self._uow` closes (same pattern as AI/email)
+- **Multipart upload**: FastAPI `UploadFile`, `await file.read()` → bytes → pass to command. Do NOT set Content-Type manually (Axios detects it)
+- **Download endpoint**: returns `FileResponse(path=storage_path, filename=..., media_type=...)` — NOT JSON
+- **IFileStorage port**: lives in `src/application/shared/file_storage.py` (shared, like IAiSummaryService)
+- **Read models (stats/aggregates)**: use a frozen `@dataclass` in the handler file — NOT a domain entity. No ID, no mapper, no migration, no repo. `DashboardStats` es el ejemplo canónico
+- **Cross-cutting queries**: agregar `find_by_tenant(tenant_id)` al repo cuando se necesita agregar sobre todo el tenant (evita N+1). Ejemplo: `IDeliverableRepository.find_by_tenant`, `IInvoiceRepository.find_by_tenant`
 
 ## Lo que NO queremos
 
@@ -132,13 +140,20 @@ start_message_mappers()        # 10 — FK → conversations
 | `PATCH` | `/api/v1/deliverables/{id}/request-changes` | ✅ | 30/min | RequestChangesHandler |
 | `POST` | `/api/v1/organizations/{id}/invoices` | ✅ | 30/min | IssueInvoiceHandler |
 | `PATCH` | `/api/v1/invoices/{id}/paid` | ✅ | 30/min | MarkInvoicePaidHandler |
-| `POST` | `/api/v1/organizations/{id}/conversations` | ✅ | 30/min | CreateConversationHandler — **⚠️ router pendiente** |
-| `POST` | `/api/v1/projects/{id}/conversations` | ✅ | 30/min | CreateConversationHandler — **⚠️ router pendiente** |
-| `GET` | `/api/v1/organizations/{id}/conversations` | ✅ | 60/min | ListOrgConversationsHandler — **⚠️ router pendiente** |
-| `GET` | `/api/v1/conversations/{id}` | ✅ | 60/min | GetConversationHandler — **⚠️ router pendiente** |
-| `POST` | `/api/v1/conversations/{id}/messages` | ✅ | 30/min | SendMessageHandler — **⚠️ router pendiente** |
-| `GET` | `/api/v1/conversations/{id}/messages` | ✅ | 60/min | ListMessagesHandler — **⚠️ router pendiente** |
-| `DELETE` | `/api/v1/messages/{id}` | ✅ | 30/min | DeleteMessageHandler — **⚠️ router pendiente** |
+| `POST` | `/api/v1/organizations/{id}/conversations` | ✅ | 30/min | CreateConversationHandler |
+| `POST` | `/api/v1/projects/{id}/conversations` | ✅ | 30/min | CreateConversationHandler |
+| `GET` | `/api/v1/organizations/{id}/conversations` | ✅ | 60/min | ListOrgConversationsHandler |
+| `GET` | `/api/v1/conversations/{id}` | ✅ | 60/min | GetConversationHandler |
+| `POST` | `/api/v1/conversations/{id}/messages` | ✅ | 30/min | SendMessageHandler |
+| `GET` | `/api/v1/conversations/{id}/messages` | ✅ | 60/min | ListMessagesHandler |
+| `DELETE` | `/api/v1/messages/{id}` | ✅ | 30/min | DeleteMessageHandler |
+| `POST` | `/api/v1/organizations/{id}/documents` | ✅ | 30/min | UploadDocumentHandler |
+| `GET` | `/api/v1/organizations/{id}/documents` | ✅ | 60/min | ListDocumentsHandler |
+| `POST` | `/api/v1/projects/{id}/documents` | ✅ | 30/min | UploadDocumentHandler |
+| `GET` | `/api/v1/projects/{id}/documents` | ✅ | 60/min | ListDocumentsHandler |
+| `DELETE` | `/api/v1/documents/{id}` | ✅ | 30/min | DeleteDocumentHandler |
+| `GET` | `/api/v1/documents/{id}/download` | ✅ | 60/min | DownloadDocumentHandler |
+| `GET` | `/api/v1/dashboard/stats` | ✅ | 30/min | GetDashboardStatsHandler |
 
 ## Error Response Format
 
@@ -165,6 +180,7 @@ start_message_mappers()        # 10 — FK → conversations
 | `APP_NAME` | `Kairos` | Product name (used in emails) |
 | `OPENROUTER_API_KEY` | `None` | Required for AI summaries in prod |
 | `AI_MODEL` | `openai/gpt-4o-mini` | Model via OpenRouter |
+| `UPLOAD_DIR` | `./uploads` | Local file storage directory |
 
 ## Backend Stack
 
@@ -176,9 +192,9 @@ Python 3.12 · FastAPI · Uvicorn · SQLAlchemy async (imperative mapping) · Al
 
 **Workflow:** see `kairos-frontend-workflow.md` (gitignored, local reference only)
 
-### Frontend Structure (Sprints 1-5 complete — build passing 2026-03-25)
+### Frontend Structure (Sprints 1-7 complete — build passing 2026-03-28)
 
-**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats ✅ · S5 Profile edit ✅
+**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats ✅ · S5 Profile edit ✅ · S6 Chat ✅ · S7 Documents ✅ · S8 Dashboard+Invitations ✅
 
 ```
 frontend/src/
@@ -190,17 +206,18 @@ frontend/src/
 │   │   └── register/page.tsx            # Con tenant_id
 │   └── (dashboard)/layout.tsx           # AuthGuard + Sidebar
 │       ├── page.tsx                     # Dashboard — stats cards + recientes ✅
+│       ├── messages/page.tsx            # Chat / conversaciones ✅
 │       ├── organizations/
 │       │   ├── page.tsx                 # List orgs ✅
 │       │   ├── new/page.tsx             # Create form ✅
 │       │   └── [id]/
-│       │       ├── page.tsx             # Detail + members ✅
+│       │       ├── page.tsx             # Detail: tabs members|invoices|chat|documents ✅
 │       │       └── invoices/page.tsx    # Stats cards + tabla + crear + marcar pagada ✅
 │       ├── projects/
 │       │   ├── page.tsx                 # List projects ✅
 │       │   ├── new/page.tsx             # Create form ✅
-│       │   └── [id]/page.tsx            # Detail + deliverables + AI summary ✅
-│       └── settings/page.tsx            # Perfil editable: nombre + avatar_url; estado + ws ID ✅
+│       │   └── [id]/page.tsx            # Detail: tabs deliverables|chat|summary|documents ✅
+│       └── settings/page.tsx            # Perfil editable: nombre + avatar_url ✅
 ├── components/
 │   ├── layout/app-sidebar.tsx, header.tsx
 │   ├── shared/auth-guard.tsx, status-badge.tsx, role-gate.tsx, confirm-dialog.tsx, empty-state.tsx
@@ -211,19 +228,26 @@ frontend/src/
 │   │                   change-role-dialog, member-table) ✅
 │   ├── projects/ (project-card, project-form, project-summary) ✅
 │   ├── deliverables/ (deliverable-card, deliverable-form, deliverable-list) ✅
-│   └── invoices/ (invoice-form, invoice-table) ✅
+│   ├── invoices/ (invoice-form, invoice-table) ✅
+│   ├── chat/ (chat-panel, conversation-list, message-thread, message-input) ✅
+│   ├── documents/ (document-upload-dialog, document-card, document-list) ✅
+│   └── dashboard/ (stats-cards, deliverable-chart, invoice-chart, project-progress) ✅
 ├── lib/
 │   ├── api/
 │   │   ├── axios-instance.ts            # Interceptors, token mgmt, error envelope
 │   │   ├── auth.api.ts                  # register, login, refresh, logout, getMe, updateProfile
 │   │   ├── tenants.api.ts, organizations.api.ts
-│   │   ├── projects.api.ts, deliverables.api.ts, invoices.api.ts ✅ (7 services)
+│   │   ├── projects.api.ts, deliverables.api.ts, invoices.api.ts
+│   │   ├── conversations.api.ts, documents.api.ts
+│   │   └── dashboard.api.ts             # GET /dashboard/stats ✅ (10 services total)
 │   └── validators/ (auth, organization, project, deliverable, invoice schemas — Zod v4)
 ├── stores/auth.store.ts, ui.store.ts    # Zustand + _hasHydrated flag
-├── hooks/ (use-auth, use-organizations, use-projects, use-deliverables, use-invoices, use-mobile)
+├── hooks/ (use-auth, use-organizations, use-projects, use-deliverables, use-invoices,
+│           use-conversations, use-documents, use-dashboard, use-mobile)
 ├── types/
 │   ├── auth.types.ts                    # User {id,email,name,avatar_url,is_active}, UpdateProfileDto
 │   ├── tenant, organization, project, deliverable, invoice, api types
+│   ├── conversation.types.ts, document.types.ts, dashboard.types.ts
 ├── constants/ (routes, roles, query-keys, navigation)
 └── middleware.ts                        # Auth guard (proxy)
 ```
@@ -238,6 +262,12 @@ frontend/src/
 - **Error envelope**: `{ error: { message } }` → `getApiErrorMessage()` helper
 - **Refresh token rotation**: every refresh saves new token pair
 - **Profile mutation**: `authApi.updateProfile()` → invalidate `queryKeys.users.me` on success
+- **Document upload**: `multipart/form-data` via FormData — do NOT set Content-Type manually (Axios autodetects)
+- **Document download**: `responseType: "blob"` → `URL.createObjectURL(blob)` → click a temp `<a>` element
+- **Tabs pattern**: state local `useState<Tab>`, `border-b-2` custom buttons — NO shadcn Tabs. Para agregar un tab: extender el tipo union + el array de tabs + el bloque condicional
+- **Recharts colores**: usar hex directos — `#4ade80` (green), `#f59e0b` (amber), `#ef4444` (red), `#a1a1aa` (muted). Recharts NO soporta CSS variables
+- **`useSearchParams()` requiere Suspense**: en Next.js 16 cualquier página que lea query params debe envolver el componente en `<Suspense>` — ver `/accept-invitation/page.tsx` como referencia
+- **`useAcceptInvitation`**: hook en `use-organizations.ts`. El API service `organizationsApi.acceptInvitation` existe desde S2
 
 ### Sprint History
 
@@ -248,9 +278,10 @@ frontend/src/
 | S3 | — | Projects + Deliverables + AI summary |
 | S4 | 2026-03-23 | Invoices UI + Dashboard stats |
 | S5 | 2026-03-25 | PATCH /users/me + settings editable + avatar_url |
-| S6-backend | 2026-03-25 | Dominio Conversation + Message — 6 use cases, repos, SA mappers (sin HTTP todavía) |
-| S6-frontend | ❌ pendiente | Chat UI: /messages, conversation-list, message-thread, message-input, tabs en org+project |
-| S7 | ❌ futuro | Document Management — nuevo dominio + storage (S3/R2) + upload UI |
+| S6-backend | 2026-03-25 | Dominio Conversation + Message — 6 use cases, repos, SA mappers |
+| S6-frontend | 2026-03-28 | Chat UI: /messages, chat-panel, conversation-list, message-thread, message-input, tabs en org+project |
+| S7 | 2026-03-28 | Document Management — dominio Document, IFileStorage, LocalFileStorage, 4 handlers, 6 endpoints, 3 componentes UI |
+| S8 | 2026-03-28 | Dashboard stats + Recharts (StatsCards, DeliverableChart, InvoiceChart, ProjectProgress) + página /accept-invitation |
 
 ## Stitch MCP (Google)
 

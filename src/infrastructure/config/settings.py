@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     openrouter_api_key: str | None = None
     ai_model: str = "openai/gpt-4o-mini"
 
+    # File uploads
+    upload_dir: str = "./uploads"
+
     @model_validator(mode="after")
     def validate_production_security(self) -> "Settings":
         if self.environment == "production":

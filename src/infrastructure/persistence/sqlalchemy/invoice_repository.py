@@ -45,3 +45,8 @@ class SqlAlchemyInvoiceRepository(SqlAlchemyRepository[Invoice], IInvoiceReposit
         )
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
+
+    async def find_by_tenant(self, tenant_id: TenantId) -> list[Invoice]:
+        stmt = select(Invoice).where(Invoice.tenant_id == tenant_id)  # type: ignore[attr-defined]
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())

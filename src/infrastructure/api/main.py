@@ -27,6 +27,9 @@ async def lifespan(app: FastAPI):
     from src.infrastructure.persistence.sqlalchemy.mappers.conversation_mapper import (
         start_mappers as start_conversation_mappers,
     )
+    from src.infrastructure.persistence.sqlalchemy.mappers.document_mapper import (
+        start_mappers as start_document_mappers,
+    )
     from src.infrastructure.persistence.sqlalchemy.mappers.deliverable_mapper import (
         start_mappers as start_deliverable_mappers,
     )
@@ -65,6 +68,7 @@ async def lifespan(app: FastAPI):
     start_invoice_mappers()        # 8 — FK → organizations + tenants
     start_conversation_mappers()   # 9 — FK → organizations + projects
     start_message_mappers()        # 10 — FK → conversations
+    start_document_mappers()       # 11 — FK → organizations + projects
 
     # 2. Create tables (development only — use Alembic in production).
     if settings.debug:
@@ -115,7 +119,10 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # ── Routers ───────────────────────────────────────────────────────────
 from src.infrastructure.api.routers import (  # noqa: E402
     auth,
+    conversations,
+    dashboard,
     deliverables,
+    documents,
     invoices,
     organizations,
     projects,
@@ -130,6 +137,9 @@ app.include_router(organizations.router, prefix="/api/v1")
 app.include_router(projects.router, prefix="/api/v1")
 app.include_router(deliverables.router, prefix="/api/v1")
 app.include_router(invoices.router, prefix="/api/v1")
+app.include_router(conversations.router, prefix="/api/v1")
+app.include_router(dashboard.router, prefix="/api/v1")
+app.include_router(documents.router, prefix="/api/v1")
 
 
 @app.get("/health", tags=["ops"])

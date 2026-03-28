@@ -47,3 +47,8 @@ class SqlAlchemyDeliverableRepository(
         )
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
+
+    async def find_by_tenant(self, tenant_id: TenantId) -> list[Deliverable]:
+        stmt = select(Deliverable).where(Deliverable.tenant_id == tenant_id)  # type: ignore[attr-defined]
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())

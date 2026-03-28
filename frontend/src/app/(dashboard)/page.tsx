@@ -3,47 +3,28 @@
 import { useCurrentUser } from "@/hooks/use-auth";
 import { useOrganizations } from "@/hooks/use-organizations";
 import { useProjects } from "@/hooks/use-projects";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useDashboardStats } from "@/hooks/use-dashboard";
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { DeliverableChart } from "@/components/dashboard/deliverable-chart";
+import { InvoiceChart } from "@/components/dashboard/invoice-chart";
+import { ProjectProgress } from "@/components/dashboard/project-progress";
 import { ProjectCard } from "@/components/projects/project-card";
 import { OrganizationCard } from "@/components/organizations/organization-card";
-import { Building2, FolderKanban, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Building2, FolderKanban } from "lucide-react";
 import Link from "next/link";
-import { ProjectStatus } from "@/types/project.types";
 
 export default function DashboardPage() {
-  const { data: user, isLoading: userLoading } = useCurrentUser();
-  const { data: organizations, isLoading: orgsLoading } = useOrganizations();
-  const { data: projects, isLoading: projectsLoading } = useProjects();
-
-  const isLoading = userLoading || orgsLoading || projectsLoading;
-
-  const totalOrgs = organizations?.length ?? 0;
-  const totalProjects = projects?.length ?? 0;
-  const activeProjects =
-    projects?.filter((p) => p.status === ProjectStatus.ACTIVE).length ?? 0;
+  const { data: user } = useCurrentUser();
+  const { data: organizations } = useOrganizations();
+  const { data: projects } = useProjects();
+  const { data: stats, isLoading: statsLoading } = useDashboardStats();
 
   const recentProjects = projects
-    ?.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )
+    ?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 5);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-        </div>
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -51,63 +32,29 @@ export default function DashboardPage() {
         Bienvenido, {user?.name}
       </h1>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Organizaciones
-            </CardTitle>
-            <Building2 className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{totalOrgs}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Proyectos activos
-            </CardTitle>
-            <FolderKanban className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{activeProjects}</p>
-            <p className="text-xs text-muted-foreground">
-              de {totalProjects} totales
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Acciones rápidas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              className="justify-start"
-              render={<Link href="/organizations/new" />}
-            >
-              <Plus className="mr-2 size-3.5" />
-              Nueva organización
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="justify-start"
-              render={<Link href="/projects/new" />}
-            >
-              <Plus className="mr-2 size-3.5" />
-              Nuevo proyecto
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Stats cards */}
+      {statsLoading ? (
+        <div className="grid gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-28" />
+          ))}
+        </div>
+      ) : stats ? (
+        <StatsCards stats={stats} />
+      ) : null}
 
-      {/* Proyectos recientes */}
+      {/* Charts */}
+      {stats && (
+        <div className="grid gap-6 md:grid-cols-2">
+          <DeliverableChart stats={stats} />
+          <InvoiceChart stats={stats} />
+        </div>
+      )}
+
+      {/* Project progress */}
+      <ProjectProgress />
+
+      {/* Recent projects */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Proyectos recientes</h2>
@@ -133,7 +80,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Organizaciones */}
+      {/* Organizations */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Tus organizaciones</h2>

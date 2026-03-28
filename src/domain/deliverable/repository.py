@@ -21,3 +21,6 @@ class IDeliverableRepository(ABC):
     async def find_by_project(
         self, project_id: ProjectId, tenant_id: TenantId
     ) -> list[Deliverable]: ...
+
+    @abstractmethod
+    async def find_by_tenant(self, tenant_id: TenantId) -> list[Deliverable]: ...

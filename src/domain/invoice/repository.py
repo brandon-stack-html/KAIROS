@@ -21,3 +21,6 @@ class IInvoiceRepository(ABC):
     async def find_by_org(
         self, org_id: OrganizationId, tenant_id: TenantId
     ) -> list[Invoice]: ...
+
+    @abstractmethod
+    async def find_by_tenant(self, tenant_id: TenantId) -> list[Invoice]: ...

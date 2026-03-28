@@ -6,6 +6,9 @@ from src.application.register_user.ports import IUserUnitOfWork
 from src.infrastructure.persistence.sqlalchemy.conversation_repository import (
     SqlAlchemyConversationRepository,
 )
+from src.infrastructure.persistence.sqlalchemy.document_repository import (
+    SqlAlchemyDocumentRepository,
+)
 from src.infrastructure.persistence.sqlalchemy.deliverable_repository import (
     SqlAlchemyDeliverableRepository,
 )
@@ -76,6 +79,7 @@ class SqlAlchemyUnitOfWork(IUserUnitOfWork):
         )
         self.conversations = SqlAlchemyConversationRepository(self._session)
         self.messages = SqlAlchemyMessageRepository(self._session)
+        self.documents = SqlAlchemyDocumentRepository(self._session)
         if self._tenant_id:
             await set_tenant(self._session, self._tenant_id)
         return self

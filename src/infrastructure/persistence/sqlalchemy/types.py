@@ -15,6 +15,7 @@ from src.domain.invoice.invoice import InvoiceStatus
 from src.domain.project.project import ProjectStatus
 from src.domain.shared.conversation_id import ConversationId
 from src.domain.shared.deliverable_id import DeliverableId
+from src.domain.shared.document_id import DocumentId
 from src.domain.shared.invitation_id import InvitationId
 from src.domain.shared.invoice_id import InvoiceId
 from src.domain.shared.membership_id import MembershipId
@@ -257,3 +258,16 @@ class MessageIdType(TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return MessageId(value) if value is not None else None
+
+
+class DocumentIdType(TypeDecorator):
+    impl = String(36)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, DocumentId):
+            return value.value
+        return value
+
+    def process_result_value(self, value, dialect):
+        return DocumentId(value) if value is not None else None

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { organizationsApi } from "@/lib/api/organizations.api";
 import { queryKeys } from "@/constants/query-keys";
 import { getApiErrorMessage } from "@/lib/api/axios-instance";
@@ -85,6 +86,30 @@ export function useChangeMemberRole(orgId: string) {
         queryKey: queryKeys.organizations.detail(orgId),
       });
       toast.success("Rol actualizado");
+    },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useAcceptInvitation() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: ({
+      orgId,
+      invitationId,
+    }: {
+      orgId: string;
+      invitationId: string;
+    }) =>
+      organizationsApi
+        .acceptInvitation(orgId, invitationId)
+        .then((res) => res.data),
+    onSuccess: (_, { orgId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.organizations.all });
+      router.push(`/organizations/${orgId}`);
+      toast.success("Te uniste a la organización");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
