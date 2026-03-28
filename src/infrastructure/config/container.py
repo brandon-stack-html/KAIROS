@@ -5,6 +5,12 @@ FastAPI's Depends() and in plain unit/integration tests.
 """
 
 from src.application.accept_invitation.handler import AcceptInvitationHandler
+from src.application.create_conversation.handler import CreateConversationHandler
+from src.application.delete_message.handler import DeleteMessageHandler
+from src.application.get_conversation.handler import GetConversationHandler
+from src.application.list_messages.handler import ListMessagesHandler
+from src.application.list_org_conversations.handler import ListOrgConversationsHandler
+from src.application.send_message.handler import SendMessageHandler
 from src.application.approve_deliverable.handler import ApproveDeliverableHandler
 from src.application.change_member_role.handler import ChangeMemberRoleHandler
 from src.application.create_organization.handler import CreateOrganizationHandler
@@ -31,6 +37,7 @@ from src.application.request_changes.handler import RequestChangesHandler
 from src.application.shared.ai_service import IAiSummaryService
 from src.application.shared.email_sender import AbstractEmailSender
 from src.application.submit_deliverable.handler import SubmitDeliverableHandler
+from src.application.update_user_profile.handler import UpdateUserProfileHandler
 from src.infrastructure.config.settings import settings
 from src.infrastructure.external.email.console_email_sender import ConsoleEmailSender
 from src.infrastructure.persistence.sqlalchemy.database import SessionLocal
@@ -196,3 +203,31 @@ def get_list_deliverables_handler() -> ListDeliverablesHandler:
 
 def get_list_invoices_handler() -> ListInvoicesHandler:
     return ListInvoicesHandler(uow=get_uow())
+
+
+def get_update_user_profile_handler() -> UpdateUserProfileHandler:
+    return UpdateUserProfileHandler(uow=get_uow())
+
+
+def get_create_conversation_handler() -> CreateConversationHandler:
+    return CreateConversationHandler(uow=get_uow())
+
+
+def get_get_conversation_handler() -> GetConversationHandler:
+    return GetConversationHandler(uow=get_uow())
+
+
+def get_list_org_conversations_handler() -> ListOrgConversationsHandler:
+    return ListOrgConversationsHandler(uow=get_uow())
+
+
+def get_send_message_handler() -> SendMessageHandler:
+    return SendMessageHandler(uow=get_uow())
+
+
+def get_delete_message_handler() -> DeleteMessageHandler:
+    return DeleteMessageHandler(uow=get_uow())
+
+
+def get_list_messages_handler() -> ListMessagesHandler:
+    return ListMessagesHandler(uow=get_uow())

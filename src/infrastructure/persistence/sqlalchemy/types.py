@@ -9,13 +9,16 @@ Each decorator handles the round-trip:
 from sqlalchemy import String
 from sqlalchemy.types import TypeDecorator
 
+from src.domain.conversation.conversation import ConversationType
 from src.domain.deliverable.deliverable import DeliverableStatus
 from src.domain.invoice.invoice import InvoiceStatus
 from src.domain.project.project import ProjectStatus
+from src.domain.shared.conversation_id import ConversationId
 from src.domain.shared.deliverable_id import DeliverableId
 from src.domain.shared.invitation_id import InvitationId
 from src.domain.shared.invoice_id import InvoiceId
 from src.domain.shared.membership_id import MembershipId
+from src.domain.shared.message_id import MessageId
 from src.domain.shared.organization_id import OrganizationId
 from src.domain.shared.project_id import ProjectId
 from src.domain.shared.role import Role
@@ -213,3 +216,44 @@ class InvoiceStatusType(TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return InvoiceStatus(value) if value is not None else None
+
+
+class ConversationIdType(TypeDecorator):
+    impl = String(36)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, ConversationId):
+            return value.value
+        return value
+
+    def process_result_value(self, value, dialect):
+        return ConversationId(value) if value is not None else None
+
+
+class ConversationTypeType(TypeDecorator):
+    """Maps ConversationType enum ↔ String(10) column."""
+
+    impl = String(10)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, ConversationType):
+            return value.value
+        return value
+
+    def process_result_value(self, value, dialect):
+        return ConversationType(value) if value is not None else None
+
+
+class MessageIdType(TypeDecorator):
+    impl = String(36)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, MessageId):
+            return value.value
+        return value
+
+    def process_result_value(self, value, dialect):
+        return MessageId(value) if value is not None else None

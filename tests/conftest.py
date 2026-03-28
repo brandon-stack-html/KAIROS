@@ -36,6 +36,9 @@ def reset_rate_limiter():
 
 @pytest.fixture(scope="session", autouse=True)
 def register_mappers():
+    from src.infrastructure.persistence.sqlalchemy.mappers.conversation_mapper import (
+        start_mappers as start_conversation_mappers,
+    )
     from src.infrastructure.persistence.sqlalchemy.mappers.deliverable_mapper import (
         start_mappers as start_deliverable_mappers,
     )
@@ -44,6 +47,9 @@ def register_mappers():
     )
     from src.infrastructure.persistence.sqlalchemy.mappers.invoice_mapper import (
         start_mappers as start_invoice_mappers,
+    )
+    from src.infrastructure.persistence.sqlalchemy.mappers.message_mapper import (
+        start_mappers as start_message_mappers,
     )
     from src.infrastructure.persistence.sqlalchemy.mappers.organization_mapper import (
         start_mappers as start_organization_mappers,
@@ -61,14 +67,16 @@ def register_mappers():
         start_mappers as start_user_mappers,
     )
 
-    start_tenant_mappers()  # tenants first — users has FK to tenants
-    start_user_mappers()
-    start_refresh_token_mappers()  # depends on users
-    start_organization_mappers()  # depends on tenants + users
-    start_invitation_mappers()  # depends on organizations + users
-    start_project_mappers()  # depends on organizations + tenants
-    start_deliverable_mappers()  # depends on projects + tenants
-    start_invoice_mappers()  # depends on organizations + tenants
+    start_tenant_mappers()         # 1 — no FKs
+    start_user_mappers()           # 2 — FK → tenants
+    start_refresh_token_mappers()  # 3 — FK → users
+    start_organization_mappers()   # 4 — FK → tenants + users
+    start_invitation_mappers()     # 5 — FK → organizations + users
+    start_project_mappers()        # 6 — FK → organizations + tenants
+    start_deliverable_mappers()    # 7 — FK → projects + tenants
+    start_invoice_mappers()        # 8 — FK → organizations + tenants
+    start_conversation_mappers()   # 9 — FK → organizations + projects
+    start_message_mappers()        # 10 — FK → conversations
 
 
 # ── In-memory database ────────────────────────────────────────────────────────
@@ -149,6 +157,7 @@ async def client(
     from src.application.remove_member.handler import RemoveMemberHandler
     from src.application.request_changes.handler import RequestChangesHandler
     from src.application.submit_deliverable.handler import SubmitDeliverableHandler
+    from src.application.update_user_profile.handler import UpdateUserProfileHandler
     from src.infrastructure.api.main import app
     from src.infrastructure.config.container import (
         get_accept_invitation_handler,
@@ -176,6 +185,7 @@ async def client(
         get_remove_member_handler,
         get_request_changes_handler,
         get_submit_deliverable_handler,
+        get_update_user_profile_handler,
     )
     from src.infrastructure.persistence.sqlalchemy.unit_of_work import (
         SqlAlchemyUnitOfWork,
@@ -272,6 +282,9 @@ async def client(
     def override_get_list_invoices_handler():
         return ListInvoicesHandler(uow=_uow())
 
+    def override_get_update_user_profile_handler():
+        return UpdateUserProfileHandler(uow=_uow())
+
     app.dependency_overrides[get_register_user_handler] = (
         override_get_register_user_handler
     )
@@ -340,6 +353,9 @@ async def client(
     )
     app.dependency_overrides[get_list_invoices_handler] = (
         override_get_list_invoices_handler
+    )
+    app.dependency_overrides[get_update_user_profile_handler] = (
+        override_get_update_user_profile_handler
     )
 
     async with AsyncClient(

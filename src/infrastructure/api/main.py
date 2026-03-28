@@ -24,6 +24,9 @@ configure_logging(log_level="DEBUG" if settings.debug else "INFO")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # 1. Register imperative mappers (idempotent).
+    from src.infrastructure.persistence.sqlalchemy.mappers.conversation_mapper import (
+        start_mappers as start_conversation_mappers,
+    )
     from src.infrastructure.persistence.sqlalchemy.mappers.deliverable_mapper import (
         start_mappers as start_deliverable_mappers,
     )
@@ -32,6 +35,9 @@ async def lifespan(app: FastAPI):
     )
     from src.infrastructure.persistence.sqlalchemy.mappers.invoice_mapper import (
         start_mappers as start_invoice_mappers,
+    )
+    from src.infrastructure.persistence.sqlalchemy.mappers.message_mapper import (
+        start_mappers as start_message_mappers,
     )
     from src.infrastructure.persistence.sqlalchemy.mappers.organization_mapper import (
         start_mappers as start_organization_mappers,
@@ -49,14 +55,16 @@ async def lifespan(app: FastAPI):
         start_mappers as start_user_mappers,
     )
 
-    start_tenant_mappers()  # must be before user (FK dependency)
-    start_user_mappers()
-    start_refresh_token_mappers()  # depends on users
-    start_organization_mappers()  # depends on tenants + users
-    start_invitation_mappers()  # depends on organizations + users
-    start_project_mappers()  # depends on organizations + tenants
-    start_deliverable_mappers()  # depends on projects + tenants
-    start_invoice_mappers()  # depends on organizations + tenants
+    start_tenant_mappers()         # 1 — no FKs
+    start_user_mappers()           # 2 — FK → tenants
+    start_refresh_token_mappers()  # 3 — FK → users
+    start_organization_mappers()   # 4 — FK → tenants + users
+    start_invitation_mappers()     # 5 — FK → organizations + users
+    start_project_mappers()        # 6 — FK → organizations + tenants
+    start_deliverable_mappers()    # 7 — FK → projects + tenants
+    start_invoice_mappers()        # 8 — FK → organizations + tenants
+    start_conversation_mappers()   # 9 — FK → organizations + projects
+    start_message_mappers()        # 10 — FK → conversations
 
     # 2. Create tables (development only — use Alembic in production).
     if settings.debug:

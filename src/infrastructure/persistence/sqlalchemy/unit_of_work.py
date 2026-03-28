@@ -3,6 +3,9 @@ from types import TracebackType
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.register_user.ports import IUserUnitOfWork
+from src.infrastructure.persistence.sqlalchemy.conversation_repository import (
+    SqlAlchemyConversationRepository,
+)
 from src.infrastructure.persistence.sqlalchemy.deliverable_repository import (
     SqlAlchemyDeliverableRepository,
 )
@@ -11,6 +14,9 @@ from src.infrastructure.persistence.sqlalchemy.invitation_repository import (
 )
 from src.infrastructure.persistence.sqlalchemy.invoice_repository import (
     SqlAlchemyInvoiceRepository,
+)
+from src.infrastructure.persistence.sqlalchemy.message_repository import (
+    SqlAlchemyMessageRepository,
 )
 from src.infrastructure.persistence.sqlalchemy.organization_repository import (
     SqlAlchemyOrganizationRepository,
@@ -68,6 +74,8 @@ class SqlAlchemyUnitOfWork(IUserUnitOfWork):
         self.invoices = SqlAlchemyInvoiceRepository(
             self._session, tenant_id=self._tenant_id
         )
+        self.conversations = SqlAlchemyConversationRepository(self._session)
+        self.messages = SqlAlchemyMessageRepository(self._session)
         if self._tenant_id:
             await set_tenant(self._session, self._tenant_id)
         return self
