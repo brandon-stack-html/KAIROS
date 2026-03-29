@@ -63,9 +63,9 @@ export default function SelectWorkspacePage() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Ingresa a tu workspace</CardTitle>
+    <Card className="border-border/50">
+      <CardHeader className="space-y-1 pb-4">
+        <CardTitle className="text-xl">Ingresa a tu workspace</CardTitle>
         <CardDescription>
           Escribe el slug de tu organización para continuar
         </CardDescription>
@@ -109,12 +109,12 @@ export default function SelectWorkspacePage() {
           </div>
         )}
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm text-muted-foreground">
           ¿Ya tienes cuenta?{" "}
-          <Link href={ROUTES.LOGIN} className="text-primary underline">
+          <Link href={ROUTES.LOGIN} className="text-primary hover:text-primary/80 font-medium">
             Inicia sesión
           </Link>
-        </p>
+        </div>
       </CardContent>
     </Card>
   );

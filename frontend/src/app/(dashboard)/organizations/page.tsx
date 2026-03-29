@@ -15,7 +15,7 @@ export default function OrganizationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Organizaciones</h1>
-        <Button render={<Link href="/organizations/new" />}>
+        <Button nativeButton={false} render={<Link href="/organizations/new" />}>
           <Plus className="mr-2 size-4" />
           Nueva organización
         </Button>
@@ -33,7 +33,7 @@ export default function OrganizationsPage() {
           title="Sin organizaciones"
           description="Crea tu primera organización para comenzar a gestionar proyectos y equipo."
           action={
-            <Button render={<Link href="/organizations/new" />}>
+            <Button nativeButton={false} render={<Link href="/organizations/new" />}>
               <Plus className="mr-2 size-4" />
               Crear organización
             </Button>

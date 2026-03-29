@@ -62,10 +62,10 @@ export function InvoiceChart({ stats }: InvoiceChartProps) {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#111111",
-                    border: "1px solid #27272a",
+                    backgroundColor: "var(--card)",
+                    border: "1px solid var(--border)",
                     borderRadius: "6px",
-                    color: "#fafafa",
+                    color: "var(--card-foreground)",
                   }}
                   formatter={(value) => formatCurrency(Number(value))}
                 />

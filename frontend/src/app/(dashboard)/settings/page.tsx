@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 import { useCurrentUser } from "@/hooks/use-auth";
 import { useAuthStore } from "@/stores/auth.store";
 import { authApi } from "@/lib/api/auth.api";
@@ -23,7 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Shield, Hash } from "lucide-react";
+import { Shield, Hash, Sun, Moon, Monitor } from "lucide-react";
 
 const schema = z.object({
   full_name: z.string().min(2).max(100),
@@ -32,11 +33,18 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+const THEME_OPTIONS = [
+  { value: "light", label: "Claro", icon: Sun },
+  { value: "dark", label: "Oscuro", icon: Moon },
+  { value: "system", label: "Sistema", icon: Monitor },
+] as const;
+
 export default function SettingsPage() {
   const { data: currentUser, isLoading } = useCurrentUser();
   const { tenantId } = useAuthStore();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const {
     register,
@@ -77,8 +85,13 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-lg space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Configuración</h1>
+    <div className="max-w-xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Configuración</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Administra tu perfil y preferencias.
+        </p>
+      </div>
 
       <Card>
         <CardHeader>
@@ -173,6 +186,30 @@ export default function SettingsPage() {
               </Button>
             </>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Preferencias</CardTitle>
+          <CardDescription>Personaliza tu experiencia en Kairos</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Label>Tema</Label>
+          <div className="flex gap-2">
+            {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
+              <Button
+                key={value}
+                variant={theme === value ? "default" : "outline"}
+                size="sm"
+                onClick={() => setTheme(value)}
+                className="flex items-center gap-2"
+              >
+                <Icon className="size-4" />
+                {label}
+              </Button>
+            ))}
+          </div>
         </CardContent>
       </Card>
 

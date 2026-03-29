@@ -44,6 +44,7 @@ export function MemberTable({ orgId, members }: MemberTableProps) {
 
   return (
     <>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -121,6 +122,7 @@ export function MemberTable({ orgId, members }: MemberTableProps) {
           })}
         </TableBody>
       </Table>
+      </div>
 
       <ConfirmDialog
         open={!!removeTarget}

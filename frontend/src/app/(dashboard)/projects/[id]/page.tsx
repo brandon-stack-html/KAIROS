@@ -63,34 +63,36 @@ export default function ProjectDetailPage() {
       {/* Header */}
       <div>
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
               {project.name}
             </h1>
             {project.description && (
-              <p className="text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground max-w-2xl">
                 {project.description}
               </p>
+            )}
+            {org && (
+              <div className="flex items-center gap-2 pt-1">
+                <Badge variant="outline">{org.name}</Badge>
+              </div>
             )}
           </div>
           <StatusBadge status={project.status} />
         </div>
-        {org && (
-          <Badge variant="outline" className="mt-2">
-            {org.name}
-          </Badge>
-        )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b">
+      <nav className="flex gap-1 border-b" role="tablist">
         {tabs.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
+            role="tab"
+            aria-selected={activeTab === key}
             onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === key
-                ? "border-primary text-primary"
+                ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -98,7 +100,7 @@ export default function ProjectDetailPage() {
             {label}
           </button>
         ))}
-      </div>
+      </nav>
 
       {/* Tab content */}
       {activeTab === "deliverables" && (

@@ -15,7 +15,7 @@ const formatCurrency = (value: string) =>
 
 export function StatsCards({ stats }: StatsCardsProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-4">
+    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -24,7 +24,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <Building2 className="size-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">{stats.organizations_count}</p>
+          <p className="text-2xl font-bold text-primary">{stats.organizations_count}</p>
         </CardContent>
       </Card>
 
@@ -36,8 +36,8 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <FolderKanban className="size-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">{stats.projects_active}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-2xl font-bold text-primary">{stats.projects_active}</p>
+          <p className="text-xs text-muted-foreground mt-1">
             de {stats.projects_total} totales
           </p>
         </CardContent>
@@ -51,8 +51,8 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <ClipboardList className="size-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">{stats.deliverables_pending}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-2xl font-bold text-primary">{stats.deliverables_pending}</p>
+          <p className="text-xs text-muted-foreground mt-1">
             de {stats.deliverables_total} totales
           </p>
         </CardContent>
@@ -66,10 +66,10 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <DollarSign className="size-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold">
+          <p className="text-2xl font-bold text-primary">
             {formatCurrency(stats.invoices_pending_amount)}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground mt-1">
             de {formatCurrency(stats.invoices_total_amount)} total
           </p>
         </CardContent>

@@ -192,9 +192,9 @@ Python 3.12 · FastAPI · Uvicorn · SQLAlchemy async (imperative mapping) · Al
 
 **Workflow:** see `kairos-frontend-workflow.md` (gitignored, local reference only)
 
-### Frontend Structure (Sprints 1-7 complete — build passing 2026-03-28)
+### Frontend Structure (Sprints 1-8 complete — build passing 2026-03-29)
 
-**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats ✅ · S5 Profile edit ✅ · S6 Chat ✅ · S7 Documents ✅ · S8 Dashboard+Invitations ✅
+**Sprint status:** S1 Auth ✅ · S2 Orgs ✅ · S3 Projects+Deliverables+AI ✅ · S4 Invoices+Stats ✅ · S5 Profile edit ✅ · S6 Chat ✅ · S7 Documents ✅ · S8 Dashboard+Invitations ✅ · S9 Seed+Fixes ✅
 
 ```
 frontend/src/
@@ -282,6 +282,7 @@ frontend/src/
 | S6-frontend | 2026-03-28 | Chat UI: /messages, chat-panel, conversation-list, message-thread, message-input, tabs en org+project |
 | S7 | 2026-03-28 | Document Management — dominio Document, IFileStorage, LocalFileStorage, 4 handlers, 6 endpoints, 3 componentes UI |
 | S8 | 2026-03-28 | Dashboard stats + Recharts (StatsCards, DeliverableChart, InvoiceChart, ProjectProgress) + página /accept-invitation |
+| S9 | 2026-03-29 | Seed script demo (14 users-orgs-projects-deliverables-invoices-conversations), build fixes |
 
 ## Stitch MCP (Google)
 
@@ -336,3 +337,22 @@ frontend/src/
 5. Create API route in `src/infrastructure/api/routers/`
 6. Run migrations: `uv run alembic upgrade head`
 7. Test: `uv run pytest`
+
+## Seed Script
+
+Demo data seeding via `scripts/seed.py` — populates DB with realistic domain data.
+
+```bash
+uv run python scripts/seed.py
+```
+
+**Creates:**
+- 1 tenant: "Demo" (slug: `demo`)
+- 2 users: Ana García (owner@kairos.dev) & Carlos López (dev@kairos.dev), both pwd `password123`
+- 1 organization: "Agencia Creativa" (slug: agencia-creativa), owner Ana
+- 2 projects: "Rediseño Web Q1", "App Mobile v2"
+- 5 deliverables: 1 APPROVED, 1 PENDING, 1 CHANGES_REQUESTED, 2 PENDING (project 2)
+- 3 invoices: 1 PAID ($2,500), 1 SENT ($4,000), 1 DRAFT ($1,500)
+- 3 conversations: 1 org + 2 project, with realistic messages
+
+Handlers invoked in FK-dependency order; all domain aggregates exercised.

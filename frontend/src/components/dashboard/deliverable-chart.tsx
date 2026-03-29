@@ -39,19 +39,19 @@ export function DeliverableChart({ stats }: DeliverableChartProps) {
       <CardContent>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart layout="vertical" data={data}>
-            <XAxis type="number" tick={{ fill: "#a1a1aa", fontSize: 12 }} />
+            <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
             <YAxis
               type="category"
               dataKey="name"
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
+              tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
               width={80}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#111111",
-                border: "1px solid #27272a",
+                backgroundColor: "var(--card)",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
-                color: "#fafafa",
+                color: "var(--card-foreground)",
               }}
             />
             <Bar dataKey="value" radius={[0, 4, 4, 0]}>

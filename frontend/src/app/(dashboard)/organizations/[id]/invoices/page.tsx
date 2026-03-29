@@ -57,7 +57,7 @@ export default function OrganizationInvoicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" render={<Link href={`/organizations/${id}`} />}>
+          <Button variant="ghost" size="icon" nativeButton={false} render={<Link href={`/organizations/${id}`} />}>
             <ArrowLeft className="size-4" />
           </Button>
           <div>

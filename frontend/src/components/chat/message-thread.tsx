@@ -75,8 +75,8 @@ export function MessageThread({
             <div
               className={`relative max-w-[70%] rounded-lg px-3 py-2 ${
                 isOwn
-                  ? "bg-green-950/30 text-foreground"
-                  : "bg-card text-foreground"
+                  ? "bg-primary/10 text-foreground"
+                  : "bg-muted text-foreground"
               }`}
             >
               <div className="mb-1 flex items-center gap-2">

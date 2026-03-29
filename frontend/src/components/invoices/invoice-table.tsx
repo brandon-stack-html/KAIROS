@@ -41,6 +41,7 @@ export function InvoiceTable({ orgId, invoices, userRole }: InvoiceTableProps) {
 
   return (
     <>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -105,6 +106,7 @@ export function InvoiceTable({ orgId, invoices, userRole }: InvoiceTableProps) {
           )}
         </TableBody>
       </Table>
+      </div>
 
       <ConfirmDialog
         open={!!payTarget}

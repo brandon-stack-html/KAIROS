@@ -62,21 +62,26 @@ export function ConversationList({
             <button
               key={conv.id}
               onClick={() => onSelect(conv.id)}
-              className={`flex w-full flex-col gap-1 border-b px-4 py-3 text-left transition-colors hover:bg-accent/50 ${
-                activeId === conv.id ? "bg-accent/30" : ""
+              className={`flex w-full items-center gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-accent/50 ${
+                activeId === conv.id ? "bg-accent border-l-2 border-l-primary" : ""
               }`}
             >
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
-                  {conv.type === ConversationType.ORG ? "Org" : "Proyecto"}
-                </Badge>
+              <div className="flex flex-col gap-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-xs shrink-0">
+                    {conv.type === ConversationType.ORG ? "Org" : "Proyecto"}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {conv.id.slice(0, 8)}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(conv.created_at), {
+                    addSuffix: true,
+                    locale: es,
+                  })}
+                </span>
               </div>
-              <span className="font-mono text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(conv.created_at), {
-                  addSuffix: true,
-                  locale: es,
-                })}
-              </span>
             </button>
           ))
         )}

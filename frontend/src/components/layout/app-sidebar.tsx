@@ -55,12 +55,12 @@ export function AppSidebar() {
             return (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
-                    isActive={isActive}
-                    render={<Link href={item.href} />}
-                  >
-                    <item.icon className="size-4" />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
+                  isActive={isActive}
+                  render={<Link href={item.href} />}
+                >
+                  <item.icon className="size-4" />
+                  <span>{item.label}</span>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             );
           })}

@@ -16,6 +16,7 @@ import { MessageInput } from "@/components/chat/message-input";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import type { Conversation } from "@/types/conversation.types";
 
@@ -89,7 +90,7 @@ export default function MessagesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold tracking-tight">Mensajes</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Mensajes</h1>
 
       {/* Org selector */}
       {orgs.length > 1 && (
@@ -116,8 +117,8 @@ export default function MessagesPage() {
 
       {/* Chat panel */}
       <div className="flex h-[600px] overflow-hidden rounded-lg border">
-        {/* Sidebar */}
-        <div className="w-[280px] shrink-0 border-r">
+        {/* Sidebar — hidden on mobile when a conversation is active */}
+        <div className={`w-full md:w-[280px] shrink-0 border-r ${activeId ? "hidden md:block" : ""}`}>
           <ConversationList
             conversations={conversations}
             activeId={activeId}
@@ -128,10 +129,20 @@ export default function MessagesPage() {
           />
         </div>
 
-        {/* Messages */}
-        <div className="flex flex-1 flex-col">
+        {/* Messages — hidden on mobile when no conversation is selected */}
+        <div className={`flex flex-1 flex-col ${!activeId ? "hidden md:flex" : ""}`}>
           {activeId && user ? (
             <>
+              {/* Back button on mobile */}
+              <div className="flex items-center gap-2 border-b px-3 py-2 md:hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveConversationId(null)}
+                >
+                  ← Volver
+                </Button>
+              </div>
               <MessageThread
                 messages={messages}
                 currentUserId={user.id}

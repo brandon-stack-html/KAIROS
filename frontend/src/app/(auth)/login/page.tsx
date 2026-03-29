@@ -47,9 +47,9 @@ export default function LoginPage() {
   if (!tenantId) return null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Iniciar sesión</CardTitle>
+    <Card className="border-border/50">
+      <CardHeader className="space-y-1 pb-4">
+        <CardTitle className="text-xl">Iniciar sesión</CardTitle>
         <CardDescription>
           Ingresa tus credenciales para continuar
         </CardDescription>
@@ -62,6 +62,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="tu@email.com"
+              autoComplete="email"
               {...register("email")}
             />
             {errors.email && (
@@ -77,6 +78,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               placeholder="••••••••"
+              autoComplete="current-password"
               {...register("password")}
             />
             {errors.password && (
@@ -95,12 +97,12 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}
-          <Link href={ROUTES.REGISTER} className="text-primary underline">
+          <Link href={ROUTES.REGISTER} className="text-primary hover:text-primary/80 font-medium">
             Regístrate
           </Link>
-        </p>
+        </div>
       </CardContent>
     </Card>
   );

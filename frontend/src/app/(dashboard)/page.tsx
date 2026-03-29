@@ -27,14 +27,19 @@ export default function DashboardPage() {
     .slice(0, 5);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">
-        Bienvenido, {user?.name}
-      </h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Bienvenido, {user?.name}
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Aquí tienes un resumen de tu actividad.
+        </p>
+      </div>
 
       {/* Stats cards */}
       {statsLoading ? (
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="h-28" />
           ))}
@@ -43,27 +48,26 @@ export default function DashboardPage() {
         <StatsCards stats={stats} />
       ) : null}
 
-      {/* Charts */}
+      {/* Charts + Progress */}
       {stats && (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <DeliverableChart stats={stats} />
           <InvoiceChart stats={stats} />
+          <ProjectProgress />
         </div>
       )}
-
-      {/* Project progress */}
-      <ProjectProgress />
+      {!stats && <ProjectProgress />}
 
       {/* Recent projects */}
-      <div className="space-y-4">
+      <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Proyectos recientes</h2>
-          <Button variant="ghost" size="sm" render={<Link href="/projects" />}>
+          <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/projects" />}>
             Ver todos
           </Button>
         </div>
         {recentProjects && recentProjects.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {recentProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
@@ -78,18 +82,18 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         )}
-      </div>
+      </section>
 
       {/* Organizations */}
-      <div className="space-y-4">
+      <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Tus organizaciones</h2>
-          <Button variant="ghost" size="sm" render={<Link href="/organizations" />}>
+          <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/organizations" />}>
             Ver todas
           </Button>
         </div>
         {organizations && organizations.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {organizations.slice(0, 6).map((org) => (
               <OrganizationCard key={org.id} organization={org} />
             ))}
@@ -104,7 +108,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         )}
-      </div>
+      </section>
     </div>
   );
 }

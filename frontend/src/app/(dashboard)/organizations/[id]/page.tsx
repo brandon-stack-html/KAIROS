@@ -64,23 +64,27 @@ export default function OrganizationDetailPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{org.name}</h1>
-          <Badge variant="secondary" className="mt-1">
-            {org.slug}
-          </Badge>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">{org.name}</h1>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span className="font-mono">/{org.slug}</span>
+            <span>·</span>
+            <span>{org.members.length} miembros</span>
+          </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b">
+      <nav className="flex gap-1 border-b" role="tablist">
         {tabs.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
+            role="tab"
+            aria-selected={activeTab === key}
             onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === key
-                ? "border-primary text-primary"
+                ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -88,7 +92,7 @@ export default function OrganizationDetailPage() {
             {label}
           </button>
         ))}
-      </div>
+      </nav>
 
       {/* Tab content */}
       {activeTab === "members" && (
@@ -130,7 +134,7 @@ export default function OrganizationDetailPage() {
             <p className="mb-4 text-sm text-muted-foreground">
               Gestiona las facturas de esta organización.
             </p>
-            <Button variant="outline" render={<Link href={`/organizations/${id}/invoices`} />}>
+            <Button variant="outline" nativeButton={false} render={<Link href={`/organizations/${id}/invoices`} />}>
               <FileText className="mr-2 size-4" />
               Ver todas las facturas
             </Button>
