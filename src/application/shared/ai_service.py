@@ -12,3 +12,18 @@ class IAiSummaryService(ABC):
         project_name: str,
         deliverables: list[Deliverable],
     ) -> str: ...
+
+    @abstractmethod
+    async def generate(self, prompt: str) -> str:
+        """Generate a response from an arbitrary prompt.
+
+        Args:
+            prompt: The user prompt to send to the AI model
+
+        Returns:
+            The AI-generated response as a string
+
+        Raises:
+            AiServiceError: If the AI service fails after retries
+        """
+        ...

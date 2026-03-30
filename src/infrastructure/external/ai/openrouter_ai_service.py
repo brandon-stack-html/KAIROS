@@ -45,25 +45,24 @@ class OpenRouterAiService(IAiSummaryService):
         self._model = model
         self._frontend_url = frontend_url
 
-    async def generate_project_update(
-        self,
-        project_name: str,
-        deliverables: list[Deliverable],
+    async def _call_openrouter(
+        self, messages: list[dict], context: str = "unknown"
     ) -> str:
-        prompt = _build_prompt(project_name, deliverables)
+        """Call the OpenRouter API with retry logic.
+
+        Args:
+            messages: List of message dicts with 'role' and 'content' keys
+            context: Description of what is being generated (for logging)
+
+        Returns:
+            The AI-generated response content
+
+        Raises:
+            AiServiceError: If all retry attempts fail
+        """
         payload = {
             "model": self._model,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": (
-                        "Eres un asistente de comunicación para freelancers. "
-                        "Redactas actualizaciones de proyecto claras y profesionales "
-                        "destinadas a clientes no técnicos."
-                    ),
-                },
-                {"role": "user", "content": prompt},
-            ],
+            "messages": messages,
             "max_tokens": 500,
         }
         headers = {
@@ -88,18 +87,40 @@ class OpenRouterAiService(IAiSummaryService):
                     "ai.openrouter_5xx",
                     attempt=attempt,
                     status=response.status_code,
-                    project=project_name,
+                    context=context,
                 )
             except httpx.TimeoutException:
                 logger.warning(
-                    "ai.openrouter_timeout", attempt=attempt, project=project_name
+                    "ai.openrouter_timeout", attempt=attempt, context=context
                 )
 
             if attempt < _MAX_ATTEMPTS:
                 await asyncio.sleep(_RETRY_BACKOFF_S)
 
-        logger.error("ai.openrouter_failed", project=project_name)
+        logger.error("ai.openrouter_failed", context=context)
         raise AiServiceError(
-            f"AI service failed to generate summary for '{project_name}' "
-            f"after {_MAX_ATTEMPTS} attempts."
+            f"AI service failed ({context}) after {_MAX_ATTEMPTS} attempts."
         )
+
+    async def generate_project_update(
+        self,
+        project_name: str,
+        deliverables: list[Deliverable],
+    ) -> str:
+        prompt = _build_prompt(project_name, deliverables)
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Eres un asistente de comunicación para freelancers. "
+                    "Redactas actualizaciones de proyecto claras y profesionales "
+                    "destinadas a clientes no técnicos."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ]
+        return await self._call_openrouter(messages, context=f"project_update:{project_name}")
+
+    async def generate(self, prompt: str) -> str:
+        messages = [{"role": "user", "content": prompt}]
+        return await self._call_openrouter(messages, context="generate_prompt")

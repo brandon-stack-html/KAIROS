@@ -6,6 +6,8 @@ from src.application.create_conversation.command import CreateConversationComman
 from src.application.create_conversation.handler import CreateConversationHandler
 from src.application.delete_message.command import DeleteMessageCommand
 from src.application.delete_message.handler import DeleteMessageHandler
+from src.application.extract_action_items.command import ExtractActionItemsCommand
+from src.application.extract_action_items.handler import ExtractActionItemsHandler
 from src.application.get_conversation.command import GetConversationCommand
 from src.application.get_conversation.handler import GetConversationHandler
 from src.application.list_messages.command import ListMessagesCommand
@@ -17,6 +19,7 @@ from src.application.send_message.handler import SendMessageHandler
 from src.infrastructure.api.dependencies import get_current_user
 from src.infrastructure.api.rate_limiter import limiter
 from src.infrastructure.api.schemas.conversation_schemas import (
+    ActionItemsResponse,
     ConversationResponse,
     MessageResponse,
     SendMessageRequest,
@@ -24,6 +27,7 @@ from src.infrastructure.api.schemas.conversation_schemas import (
 from src.infrastructure.config.container import (
     get_create_conversation_handler,
     get_delete_message_handler,
+    get_extract_action_items_handler,
     get_get_conversation_handler,
     get_list_messages_handler,
     get_list_org_conversations_handler,
@@ -219,4 +223,32 @@ async def delete_message(
             message_id=message_id,
             requester_id=requester_id,
         )
+    )
+
+
+@router.post(
+    "/conversations/{conversation_id}/extract-actions",
+    response_model=ActionItemsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Extract action items from conversation using AI",
+)
+@limiter.limit("10/minute")
+async def extract_action_items(
+    conversation_id: str,
+    request: Request,
+    payload: dict = Depends(get_current_user),
+    handler: ExtractActionItemsHandler = Depends(get_extract_action_items_handler),
+) -> ActionItemsResponse:
+    tenant_id: str = request.state.tenant_id
+    user_id: str = payload["sub"]
+    ai_response = await handler.handle(
+        ExtractActionItemsCommand(
+            conversation_id=conversation_id,
+            user_id=user_id,
+            tenant_id=tenant_id,
+        )
+    )
+    return ActionItemsResponse(
+        conversation_id=conversation_id,
+        ai_action_items=ai_response,
     )

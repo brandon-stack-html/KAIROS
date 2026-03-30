@@ -8,6 +8,7 @@ import {
 } from "@/hooks/use-deliverables";
 import { DeliverableCard } from "./deliverable-card";
 import { DeliverableForm } from "./deliverable-form";
+import { RequestChangesDialog } from "./request-changes-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,7 @@ export function DeliverableList({ projectId, userRole }: DeliverableListProps) {
   const approveMutation = useApproveDeliverable(projectId);
   const requestChangesMutation = useRequestChanges(projectId);
   const [formOpen, setFormOpen] = useState(false);
+  const [requestChangesDeliverableId, setRequestChangesDeliverableId] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -67,9 +69,9 @@ export function DeliverableList({ projectId, userRole }: DeliverableListProps) {
               deliverable={deliverable}
               userRole={userRole}
               onApprove={(id) => approveMutation.mutate(id)}
-              onRequestChanges={(id) => requestChangesMutation.mutate(id)}
+              onRequestChanges={(id) => setRequestChangesDeliverableId(id)}
               isApproving={approveMutation.isPending}
-              isRequesting={requestChangesMutation.isPending}
+              isRequesting={false}
             />
           ))}
         </div>
@@ -79,6 +81,13 @@ export function DeliverableList({ projectId, userRole }: DeliverableListProps) {
         projectId={projectId}
         open={formOpen}
         onOpenChange={setFormOpen}
+      />
+
+      <RequestChangesDialog
+        open={!!requestChangesDeliverableId}
+        onOpenChange={(open) => !open && setRequestChangesDeliverableId(null)}
+        deliverableId={requestChangesDeliverableId}
+        projectId={projectId}
       />
     </div>
   );

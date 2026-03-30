@@ -58,12 +58,32 @@ export function MessageThread({
 
   return (
     <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
-      {messages.map((msg) => {
+      {messages.map((msg, idx) => {
+        // Group messages by day for date dividers
+        const prevMsg = idx > 0 ? messages[idx - 1] : null;
+        const isSameDay =
+          prevMsg &&
+          new Date(prevMsg.created_at).toDateString() ===
+            new Date(msg.created_at).toDateString();
+        const showDateDivider = !isSameDay;
         const isOwn = msg.sender_id === currentUserId;
 
         return (
+          <div key={msg.id}>
+            {showDateDivider && (
+              <div className="flex items-center gap-3 py-2 my-2">
+                <div className="h-px flex-1 bg-white/5" />
+                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                  {new Date(msg.created_at).toLocaleDateString("es-ES", {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+                <div className="h-px flex-1 bg-white/5" />
+              </div>
+            )}
           <div
-            key={msg.id}
             className={`group flex gap-3 ${isOwn ? "flex-row-reverse" : ""}`}
           >
             <Avatar className="size-8 shrink-0">
@@ -73,10 +93,10 @@ export function MessageThread({
             </Avatar>
 
             <div
-              className={`relative max-w-[70%] rounded-lg px-3 py-2 ${
+              className={`relative max-w-[70%] px-3 py-2 border ${
                 isOwn
-                  ? "bg-primary/10 text-foreground"
-                  : "bg-muted text-foreground"
+                  ? "bg-[#1a2e1a] text-foreground border-primary/10 rounded-tl-xl rounded-bl-xl rounded-br-xl"
+                  : "bg-muted text-foreground border-white/5 rounded-tr-xl rounded-br-xl rounded-bl-xl"
               }`}
             >
               <div className="mb-1 flex items-center gap-2">
@@ -103,6 +123,7 @@ export function MessageThread({
                 </button>
               )}
             </div>
+          </div>
           </div>
         );
       })}

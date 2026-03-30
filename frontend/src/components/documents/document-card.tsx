@@ -64,6 +64,7 @@ export function DocumentCard({
             size="icon"
             variant="ghost"
             className="size-8"
+            nativeButton={false}
             render={<a href={downloadUrl} download={document.filename} />}
           >
             <Download className="size-4" />

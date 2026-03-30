@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { deliverablesApi } from "@/lib/api/deliverables.api";
+import { deliverablesApi, AiFeedbackResponse } from "@/lib/api/deliverables.api";
 import { queryKeys } from "@/constants/query-keys";
 import { getApiErrorMessage } from "@/lib/api/axios-instance";
 import { toast } from "sonner";
@@ -56,5 +56,22 @@ export function useRequestChanges(projectId: string) {
       toast.success("Cambios solicitados");
     },
     onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useGenerateFeedback() {
+  return useMutation({
+    mutationFn: ({
+      id,
+      feedbackText,
+    }: {
+      id: string;
+      feedbackText: string;
+    }): Promise<AiFeedbackResponse> =>
+      deliverablesApi.generateFeedback(id, feedbackText).then((res) => res.data),
+    onError: (error) => {
+      console.warn("AI feedback generation failed", error);
+      // Don't show toast here — let parent component handle it as non-blocking
+    },
   });
 }

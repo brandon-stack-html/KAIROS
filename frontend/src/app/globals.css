@@ -127,4 +127,30 @@
   html {
     @apply font-sans;
   }
+
+  /* Scrollbar ultra-delgado */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #252626;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+  }
+}
+
+@layer utilities {
+  /* Glow effects para elementos interactivos */
+  .glow-primary {
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+  }
+  .glow-primary-lg {
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.25);
+  }
 }

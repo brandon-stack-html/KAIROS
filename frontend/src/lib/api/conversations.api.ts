@@ -5,6 +5,11 @@ import type {
   SendMessageDto,
 } from "@/types/conversation.types";
 
+export interface ActionItemsResponse {
+  conversation_id: string;
+  ai_action_items: string;
+}
+
 export const conversationsApi = {
   createForOrg: (orgId: string) =>
     api.post<Conversation>(`/organizations/${orgId}/conversations`),
@@ -28,4 +33,9 @@ export const conversationsApi = {
 
   deleteMessage: (messageId: string) =>
     api.delete(`/messages/${messageId}`),
+
+  extractActions: (conversationId: string) =>
+    api.post<ActionItemsResponse>(
+      `/conversations/${conversationId}/extract-actions`
+    ),
 };

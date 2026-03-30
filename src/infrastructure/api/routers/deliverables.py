@@ -4,6 +4,12 @@ from fastapi import APIRouter, Depends, Request, status
 
 from src.application.approve_deliverable.command import ApproveDeliverableCommand
 from src.application.approve_deliverable.handler import ApproveDeliverableHandler
+from src.application.generate_deliverable_feedback.command import (
+    GenerateDeliverableFeedbackCommand,
+)
+from src.application.generate_deliverable_feedback.handler import (
+    GenerateDeliverableFeedbackHandler,
+)
 from src.application.request_changes.command import RequestChangesCommand
 from src.application.request_changes.handler import RequestChangesHandler
 from src.application.submit_deliverable.command import SubmitDeliverableCommand
@@ -11,11 +17,14 @@ from src.application.submit_deliverable.handler import SubmitDeliverableHandler
 from src.infrastructure.api.dependencies import get_current_user
 from src.infrastructure.api.rate_limiter import limiter
 from src.infrastructure.api.schemas.deliverable_schemas import (
+    AiFeedbackRequest,
+    AiFeedbackResponse,
     DeliverableCreate,
     DeliverableResponse,
 )
 from src.infrastructure.config.container import (
     get_approve_deliverable_handler,
+    get_generate_deliverable_feedback_handler,
     get_request_changes_handler,
     get_submit_deliverable_handler,
 )
@@ -112,3 +121,35 @@ async def request_changes(
         )
     )
     return _deliverable_response(deliverable)
+
+
+@router.post(
+    "/deliverables/{deliverable_id}/ai-feedback",
+    response_model=AiFeedbackResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Generate AI-structured feedback for a deliverable",
+)
+@limiter.limit("10/minute")
+async def generate_deliverable_feedback(
+    deliverable_id: str,
+    body: AiFeedbackRequest,
+    request: Request,
+    payload: dict = Depends(get_current_user),
+    handler: GenerateDeliverableFeedbackHandler = Depends(
+        get_generate_deliverable_feedback_handler
+    ),
+) -> AiFeedbackResponse:
+    tenant_id: str = request.state.tenant_id
+    ai_response = await handler.handle(
+        GenerateDeliverableFeedbackCommand(
+            deliverable_id=deliverable_id,
+            feedback_text=body.feedback_text,
+            reviewer_id=payload["sub"],
+            tenant_id=tenant_id,
+        )
+    )
+    return AiFeedbackResponse(
+        deliverable_id=deliverable_id,
+        feedback_text=body.feedback_text,
+        ai_structured_feedback=ai_response,
+    )

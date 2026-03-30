@@ -23,3 +23,9 @@ class InMemoryAiService(IAiSummaryService):
             f"Resumen del proyecto {project_name}: "
             f"{len(deliverables)} entregable(s) registrado(s)."
         )
+
+    async def generate(self, prompt: str) -> str:
+        self.calls.append({"prompt": prompt})
+        if self.response is not None:
+            return self.response
+        return '{"items": [], "summary": "stub response"}'

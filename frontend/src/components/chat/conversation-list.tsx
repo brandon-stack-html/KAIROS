@@ -63,11 +63,12 @@ export function ConversationList({
               key={conv.id}
               onClick={() => onSelect(conv.id)}
               className={`flex w-full items-center gap-3 border-b px-4 py-3 text-left transition-colors hover:bg-accent/50 ${
-                activeId === conv.id ? "bg-accent border-l-2 border-l-primary" : ""
+                activeId === conv.id ? "bg-primary/10 border-l-2 border-l-primary" : ""
               }`}
             >
               <div className="flex flex-col gap-1 min-w-0">
                 <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary glow-primary shrink-0" />
                   <Badge variant="outline" className="text-xs shrink-0">
                     {conv.type === ConversationType.ORG ? "Org" : "Proyecto"}
                   </Badge>

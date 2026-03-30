@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { conversationsApi } from "@/lib/api/conversations.api";
+import { conversationsApi, ActionItemsResponse } from "@/lib/api/conversations.api";
 import { queryKeys } from "@/constants/query-keys";
 import { getApiErrorMessage } from "@/lib/api/axios-instance";
 import { toast } from "sonner";
@@ -94,6 +94,14 @@ export function useDeleteMessage(conversationId: string) {
       });
       toast.success("Mensaje eliminado");
     },
+    onError: (error) => toast.error(getApiErrorMessage(error)),
+  });
+}
+
+export function useExtractActions(conversationId: string) {
+  return useMutation({
+    mutationFn: (): Promise<ActionItemsResponse> =>
+      conversationsApi.extractActions(conversationId).then((res) => res.data),
     onError: (error) => toast.error(getApiErrorMessage(error)),
   });
 }

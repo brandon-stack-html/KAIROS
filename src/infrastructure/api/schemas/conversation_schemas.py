@@ -21,3 +21,8 @@ class MessageResponse(BaseModel):
     sender_id: str
     content: str
     created_at: str
+
+
+class ActionItemsResponse(BaseModel):
+    conversation_id: str
+    ai_action_items: str

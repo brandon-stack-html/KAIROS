@@ -22,6 +22,10 @@ from src.application.create_organization.handler import CreateOrganizationHandle
 from src.application.create_project.handler import CreateProjectHandler
 from src.application.create_tenant.handler import CreateTenantHandler
 from src.application.generate_client_update.handler import GenerateClientUpdateHandler
+from src.application.generate_deliverable_feedback.handler import (
+    GenerateDeliverableFeedbackHandler,
+)
+from src.application.extract_action_items.handler import ExtractActionItemsHandler
 from src.application.get_current_user.handler import GetCurrentUserHandler
 from src.application.get_organization.handler import GetOrganizationHandler
 from src.application.get_project.handler import GetProjectHandler
@@ -184,6 +188,10 @@ def get_generate_client_update_handler() -> GenerateClientUpdateHandler:
     return GenerateClientUpdateHandler(uow=get_uow(), ai_service=_ai_service)
 
 
+def get_generate_deliverable_feedback_handler() -> GenerateDeliverableFeedbackHandler:
+    return GenerateDeliverableFeedbackHandler(uow=get_uow(), ai_service=_ai_service)
+
+
 def get_get_tenant_by_slug_handler() -> GetTenantBySlugHandler:
     return GetTenantBySlugHandler(uow=get_uow())
 
@@ -238,6 +246,10 @@ def get_delete_message_handler() -> DeleteMessageHandler:
 
 def get_list_messages_handler() -> ListMessagesHandler:
     return ListMessagesHandler(uow=get_uow())
+
+
+def get_extract_action_items_handler() -> ExtractActionItemsHandler:
+    return ExtractActionItemsHandler(uow=get_uow(), ai_service=_ai_service)
 
 
 def get_upload_document_handler() -> UploadDocumentHandler:

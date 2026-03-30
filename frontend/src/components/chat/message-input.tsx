@@ -42,6 +42,7 @@ export function MessageInput({ onSend, isPending }: MessageInputProps) {
         size="icon"
         onClick={handleSend}
         disabled={isPending || !content.trim()}
+        className="glow-primary-lg text-neutral-950"
       >
         <SendHorizontal className="size-4" />
       </Button>

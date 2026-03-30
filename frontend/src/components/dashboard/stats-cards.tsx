@@ -16,57 +16,75 @@ const formatCurrency = (value: string) =>
 export function StatsCards({ stats }: StatsCardsProps) {
   return (
     <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      {/* Organizaciones — Verde */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
             Organizaciones
           </CardTitle>
-          <Building2 className="size-4 text-muted-foreground" />
+          <div className="bg-green-500/10 text-green-400 rounded-lg p-2">
+            <Building2 className="size-4" />
+          </div>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold text-primary">{stats.organizations_count}</p>
+          <p className="text-3xl font-bold text-green-400 font-mono">
+            {stats.organizations_count}
+          </p>
         </CardContent>
       </Card>
 
+      {/* Proyectos — Amber */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
             Proyectos activos
           </CardTitle>
-          <FolderKanban className="size-4 text-muted-foreground" />
+          <div className="bg-amber-500/10 text-amber-400 rounded-lg p-2">
+            <FolderKanban className="size-4" />
+          </div>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold text-primary">{stats.projects_active}</p>
+          <p className="text-3xl font-bold text-amber-400 font-mono">
+            {stats.projects_active}
+          </p>
           <p className="text-xs text-muted-foreground mt-1">
             de {stats.projects_total} totales
           </p>
         </CardContent>
       </Card>
 
+      {/* Entregables — Azul */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
             Entregables pendientes
           </CardTitle>
-          <ClipboardList className="size-4 text-muted-foreground" />
+          <div className="bg-blue-500/10 text-blue-400 rounded-lg p-2">
+            <ClipboardList className="size-4" />
+          </div>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold text-primary">{stats.deliverables_pending}</p>
+          <p className="text-3xl font-bold text-blue-400 font-mono">
+            {stats.deliverables_pending}
+          </p>
           <p className="text-xs text-muted-foreground mt-1">
             de {stats.deliverables_total} totales
           </p>
         </CardContent>
       </Card>
 
+      {/* Facturación — Verde claro */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
             Facturación pendiente
           </CardTitle>
-          <DollarSign className="size-4 text-muted-foreground" />
+          <div className="bg-primary/10 text-primary rounded-lg p-2">
+            <DollarSign className="size-4" />
+          </div>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold text-primary">
+          <p className="text-3xl font-bold text-primary font-mono">
             {formatCurrency(stats.invoices_pending_amount)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">

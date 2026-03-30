@@ -18,7 +18,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, ChevronsUpDown } from "lucide-react";
+import { LogOut, ChevronsUpDown, Zap } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { navigation } from "@/constants/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { useLogout } from "@/hooks/use-auth";
@@ -40,7 +41,10 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="border-b px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-tight">Kairos</span>
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
+            <Zap className="w-4 h-4" />
+          </div>
+          <span className="text-xl font-black tracking-tight">Kairos</span>
         </Link>
       </SidebarHeader>
 
@@ -57,6 +61,9 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   isActive={isActive}
                   render={<Link href={item.href} />}
+                  className={cn(
+                    isActive && "border-r-2 border-primary bg-primary/10 text-primary"
+                  )}
                 >
                   <item.icon className="size-4" />
                   <span>{item.label}</span>
@@ -78,7 +85,12 @@ export function AppSidebar() {
                 <AvatarFallback className="text-xs">{initials}</AvatarFallback>
               </Avatar>
               <div className="flex-1 truncate">
-                <p className="truncate font-medium">{user?.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="truncate font-medium">{user?.name}</p>
+                  <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">
+                    Pro
+                  </span>
+                </div>
                 <p className="truncate text-xs text-muted-foreground">
                   {user?.email}
                 </p>

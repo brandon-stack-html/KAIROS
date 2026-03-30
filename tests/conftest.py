@@ -148,6 +148,9 @@ async def client(
     from src.application.generate_client_update.handler import (
         GenerateClientUpdateHandler,
     )
+    from src.application.generate_deliverable_feedback.handler import (
+        GenerateDeliverableFeedbackHandler,
+    )
     from src.application.get_current_user.handler import GetCurrentUserHandler
     from src.application.get_organization.handler import GetOrganizationHandler
     from src.application.get_project.handler import GetProjectHandler
@@ -182,6 +185,7 @@ async def client(
         get_create_tenant_handler,
         get_current_user_handler,
         get_generate_client_update_handler,
+        get_generate_deliverable_feedback_handler,
         get_get_organization_handler,
         get_get_project_handler,
         get_get_tenant_by_slug_handler,
@@ -274,6 +278,15 @@ async def client(
         )
 
         return GenerateClientUpdateHandler(uow=_uow(), ai_service=InMemoryAiService())
+
+    def override_get_generate_deliverable_feedback_handler():
+        from src.infrastructure.persistence.in_memory.ai_service import (
+            InMemoryAiService,
+        )
+
+        return GenerateDeliverableFeedbackHandler(
+            uow=_uow(), ai_service=InMemoryAiService()
+        )
 
     def override_get_get_tenant_by_slug_handler():
         return GetTenantBySlugHandler(uow=_uow())
@@ -371,6 +384,9 @@ async def client(
     )
     app.dependency_overrides[get_generate_client_update_handler] = (
         override_get_generate_client_update_handler
+    )
+    app.dependency_overrides[get_generate_deliverable_feedback_handler] = (
+        override_get_generate_deliverable_feedback_handler
     )
     app.dependency_overrides[get_get_tenant_by_slug_handler] = (
         override_get_get_tenant_by_slug_handler

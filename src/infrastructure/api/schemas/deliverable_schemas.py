@@ -15,3 +15,13 @@ class DeliverableResponse(BaseModel):
     status: str
     created_at: str
     updated_at: str
+
+
+class AiFeedbackRequest(BaseModel):
+    feedback_text: str = Field(min_length=1, max_length=2000)
+
+
+class AiFeedbackResponse(BaseModel):
+    deliverable_id: str
+    feedback_text: str
+    ai_structured_feedback: str
