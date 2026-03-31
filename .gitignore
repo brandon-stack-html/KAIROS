@@ -18,6 +18,9 @@ __pycache__/
 .env
 .env.*
 !.env.example
+cloudinit.yml
+vps_payload.json
+.env.prod
 
 # ── Databases ────────────────────────────────────────────────────────
 *.db

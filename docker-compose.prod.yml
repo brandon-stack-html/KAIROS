@@ -28,7 +28,7 @@ services:
       DATABASE_URL: postgresql+asyncpg://kairos:${POSTGRES_PASSWORD}@db:5432/kairos
       SECRET_KEY: ${SECRET_KEY}
       ENVIRONMENT: production
-      ALLOWED_ORIGINS: http://${SERVER_IP}:3000
+      ALLOWED_ORIGINS: '["http://${SERVER_IP}:3000"]'
       EMAIL_PROVIDER: resend
       RESEND_API_KEY: ${RESEND_API_KEY}
       EMAIL_FROM: onboarding@resend.dev
