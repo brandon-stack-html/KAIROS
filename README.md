@@ -12,7 +12,7 @@
 
 ## 🔗 Demo en vivo
 
-> **URL:** `[pendiente de deploy]` <!-- reemplaza con la URL de CubePath -->
+> **URL:** http://45.90.237.238:3000
 
 ### 🧪 Credenciales de prueba
 
@@ -255,7 +255,7 @@ npm run dev
 
 ## ✅ Confirmaciones
 
-- [x] El proyecto está desplegado en CubePath y funciona correctamente
+- [x] El proyecto está desplegado en CubePath: http://45.90.237.238:3000
 - [x] El repositorio es público con README documentado
 - [x] He leído y acepto las reglas de la hackatón
 
