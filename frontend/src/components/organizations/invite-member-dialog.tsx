@@ -69,10 +69,10 @@ export function InviteMemberDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-white/[0.06] bg-zinc-950">
         <DialogHeader>
-          <DialogTitle>Invitar miembro</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white">Invitar miembro</DialogTitle>
+          <DialogDescription className="text-zinc-400">
             Envía una invitación por email para unirse a la organización
           </DialogDescription>
         </DialogHeader>
@@ -84,15 +84,16 @@ export function InviteMemberDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-zinc-300">Email</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
                       placeholder="colega@email.com"
+                      className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -101,17 +102,17 @@ export function InviteMemberDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rol</FormLabel>
+                  <FormLabel className="text-zinc-300">Rol</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white">
                         <SelectValue placeholder="Selecciona un rol" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="border-white/[0.06] bg-zinc-900">
                       {invitableRoles.map((role) => (
                         <SelectItem key={role} value={role}>
                           {ROLE_LABELS[role]}
@@ -119,7 +120,7 @@ export function InviteMemberDialog({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -128,12 +129,13 @@ export function InviteMemberDialog({
               <Button
                 type="button"
                 variant="outline"
+                className="border-white/[0.06] hover:bg-white/[0.04]"
                 onClick={() => onOpenChange(false)}
                 disabled={inviteMember.isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={inviteMember.isPending}>
+              <Button type="submit" className="bg-green-500 text-black hover:bg-green-400" disabled={inviteMember.isPending}>
                 {inviteMember.isPending ? "Enviando..." : "Enviar invitación"}
               </Button>
             </DialogFooter>

@@ -74,17 +74,14 @@ export function ProjectForm({ defaultOrgId }: ProjectFormProps) {
           name="org_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Organización</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
+              <FormLabel className="text-zinc-300">Organización</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-zinc-900/50 border-zinc-800 text-white">
                     <SelectValue placeholder="Selecciona una organización" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="border-white/[0.06] bg-zinc-900">
                   {organizations?.map((org) => (
                     <SelectItem key={org.id} value={org.id}>
                       {org.name}
@@ -92,7 +89,7 @@ export function ProjectForm({ defaultOrgId }: ProjectFormProps) {
                   ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -101,11 +98,15 @@ export function ProjectForm({ defaultOrgId }: ProjectFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre del proyecto</FormLabel>
+              <FormLabel className="text-zinc-300">Nombre del proyecto</FormLabel>
               <FormControl>
-                <Input placeholder="Rediseño web Q1" {...field} />
+                <Input
+                  placeholder="Rediseño web Q1"
+                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
+                  {...field}
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -114,17 +115,17 @@ export function ProjectForm({ defaultOrgId }: ProjectFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Descripción</FormLabel>
+              <FormLabel className="text-zinc-300">Descripción</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Descripción opcional del proyecto..."
-                  className="resize-none"
+                  className="resize-none bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
                   rows={3}
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Opcional</FormDescription>
-              <FormMessage />
+              <FormDescription className="text-zinc-500">Opcional</FormDescription>
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -132,11 +133,12 @@ export function ProjectForm({ defaultOrgId }: ProjectFormProps) {
           <Button
             type="button"
             variant="outline"
+            className="border-white/[0.06] hover:bg-white/[0.04]"
             onClick={() => router.back()}
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={createProject.isPending}>
+          <Button type="submit" className="bg-green-500 text-black hover:bg-green-400" disabled={createProject.isPending}>
             {createProject.isPending ? "Creando..." : "Crear proyecto"}
           </Button>
         </div>

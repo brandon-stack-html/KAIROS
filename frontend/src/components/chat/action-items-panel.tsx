@@ -48,22 +48,16 @@ export function ActionItemsPanel({ json, onClose }: ActionItemsPanelProps) {
   }
 
   if (!parsedItems || !Array.isArray(parsedItems.action_items)) {
-    // Fallback: show error message
     return (
-      <Card className="p-4 bg-muted/50 border-muted-foreground/20">
+      <Card className="p-4 bg-purple-500/5 border-purple-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span className="text-sm text-zinc-400">
               No se pudieron extraer tareas
             </span>
           </div>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={onClose}
-            className="h-6 w-6 p-0"
-          >
+          <Button size="sm" variant="ghost" onClick={onClose} className="h-6 w-6 p-0 text-zinc-500 hover:text-zinc-200">
             <X className="w-4 h-4" />
           </Button>
         </div>
@@ -73,84 +67,66 @@ export function ActionItemsPanel({ json, onClose }: ActionItemsPanelProps) {
 
   const { action_items, summary } = parsedItems;
 
+  const priorityClasses = {
+    high: "bg-red-500/10 text-red-400 border-red-500/20",
+    medium: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    low: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
+  } as const;
+
   return (
-    <Card className="p-4 bg-muted/50 border-muted-foreground/20">
+    <Card className="p-4 bg-purple-500/5 border-purple-500/20">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-start gap-2 flex-1">
-          <Sparkles className="w-4 h-4 mt-0.5 text-accent flex-shrink-0" />
+          <Sparkles className="w-4 h-4 mt-0.5 text-purple-400 flex-shrink-0" />
           <div>
-            <h3 className="text-sm font-semibold">Tareas extraídas</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{summary}</p>
+            <h3 className="text-sm font-semibold text-white">Tareas extraídas</h3>
+            <p className="text-xs text-zinc-400 mt-0.5">{summary}</p>
           </div>
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={onClose}
-          className="h-6 w-6 p-0 flex-shrink-0"
-        >
+        <Button size="sm" variant="ghost" onClick={onClose} className="h-6 w-6 p-0 text-zinc-500 hover:text-zinc-200 flex-shrink-0">
           <X className="w-4 h-4" />
         </Button>
       </div>
 
       {action_items.length === 0 ? (
-        <p className="text-xs text-muted-foreground">
-          No se encontraron tareas en la conversación
-        </p>
+        <p className="text-xs text-zinc-500">No se encontraron tareas en la conversación</p>
       ) : (
         <div className="space-y-3">
           {action_items.map((item, idx) => (
-            <div
-              key={idx}
-              className="border-l-2 border-border pl-3 py-2 bg-background/50 rounded-r px-3"
-            >
-              {/* Task header */}
+            <div key={idx} className="border-l-2 border-purple-500/30 pl-3 py-1.5 bg-white/[0.02] rounded-r">
               <div className="flex items-start gap-2 mb-2">
-                <CheckCircle2 className="w-4 h-4 mt-0.5 text-muted-foreground flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground break-words">
-                    {item.task}
-                  </p>
-                </div>
+                <CheckCircle2 className="w-4 h-4 mt-0.5 text-purple-400 flex-shrink-0" />
+                <p className="text-sm font-medium text-zinc-200 break-words flex-1 min-w-0">
+                  {item.task}
+                </p>
               </div>
 
-              {/* Task metadata */}
-              <div className="flex flex-wrap items-center gap-2 mb-2 ml-6">
+              <div className="flex flex-wrap items-center gap-1.5 mb-2 ml-6">
                 {item.assigned_to !== "unassigned" && (
-                  <Badge variant="outline" className="text-xs">
+                  <span className="text-[10px] border border-white/[0.06] bg-white/[0.02] text-zinc-400 px-2 py-0.5 rounded-full">
                     👤 {item.assigned_to}
-                  </Badge>
+                  </span>
                 )}
                 {item.deadline !== "not specified" && (
-                  <Badge variant="secondary" className="text-xs">
-                    📅 {item.deadline}
-                  </Badge>
+                  <span className="text-[10px] border border-white/[0.06] bg-white/[0.02] text-zinc-400 px-2 py-0.5 rounded-full font-mono">
+                    {item.deadline}
+                  </span>
                 )}
-                <Badge
-                  variant={priorityColors[item.priority]}
-                  className="text-xs"
-                >
+                <span className={`text-[10px] border px-2 py-0.5 rounded-full ${priorityClasses[item.priority]}`}>
                   {priorityLabels[item.priority]}
-                </Badge>
+                </span>
               </div>
 
-              {/* Source quote (collapsible) */}
               <button
-                onClick={() =>
-                  setExpandedQuote(expandedQuote === idx ? null : idx)
-                }
-                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground ml-6 transition-colors"
+                onClick={() => setExpandedQuote(expandedQuote === idx ? null : idx)}
+                className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300 ml-6 transition-colors"
               >
-                {expandedQuote === idx ? (
-                  <ChevronUp className="w-3 h-3" />
-                ) : (
-                  <ChevronDown className="w-3 h-3" />
-                )}
+                {expandedQuote === idx ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 <span>Fuente</span>
               </button>
 
               {expandedQuote === idx && (
-                <p className="text-xs text-muted-foreground italic ml-6 mt-1 p-2 bg-muted rounded border-l border-muted-foreground">
+                <p className="text-xs text-zinc-500 italic ml-6 mt-1.5 p-2 bg-white/[0.02] rounded border-l border-purple-500/20">
                   "{item.source_quote}"
                 </p>
               )}

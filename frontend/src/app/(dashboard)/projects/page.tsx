@@ -27,22 +27,22 @@ export default function ProjectsPage() {
   const { data: organizations } = useOrganizations();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Proyectos</h1>
-        <Button nativeButton={false} render={<Link href="/projects/new" />}>
+        <Button className="bg-green-500 text-black hover:bg-green-400" nativeButton={false} render={<Link href="/projects/new" />}>
           <Plus className="mr-2 size-4" />
           Nuevo proyecto
         </Button>
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground">Filtrar por org:</span>
+        <span className="text-sm text-zinc-500">Filtrar por org:</span>
         <Select value={selectedOrg} onValueChange={(v) => v && setSelectedOrg(v)}>
-          <SelectTrigger className="w-64">
+          <SelectTrigger className="w-64 border-white/[0.06] bg-white/[0.02] text-zinc-300">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="border-white/[0.06] bg-zinc-900">
             <SelectItem value={ALL_ORGS}>Todas las organizaciones</SelectItem>
             {organizations?.map((org) => (
               <SelectItem key={org.id} value={org.id}>
@@ -54,7 +54,7 @@ export default function ProjectsPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-36" />
           ))}
@@ -69,14 +69,14 @@ export default function ProjectsPage() {
               : "Crea tu primer proyecto para comenzar a gestionar entregables."
           }
           action={
-            <Button nativeButton={false} render={<Link href="/projects/new" />}>
+            <Button className="bg-green-500 text-black hover:bg-green-400" nativeButton={false} render={<Link href="/projects/new" />}>
               <Plus className="mr-2 size-4" />
               Crear proyecto
             </Button>
           }
         />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects?.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}

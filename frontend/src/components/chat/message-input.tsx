@@ -28,13 +28,13 @@ export function MessageInput({ onSend, isPending }: MessageInputProps) {
   };
 
   return (
-    <div className="flex items-end gap-2 border-t p-3">
+    <div className="flex items-end gap-2 border-t border-white/[0.06] p-3 bg-white/[0.01]">
       <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Escribe un mensaje..."
-        className="min-h-[40px] max-h-[120px] resize-none"
+        placeholder="Escribe un mensaje... (Enter para enviar)"
+        className="min-h-[40px] max-h-[120px] resize-none bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 rounded-xl"
         rows={1}
         disabled={isPending}
       />
@@ -42,7 +42,7 @@ export function MessageInput({ onSend, isPending }: MessageInputProps) {
         size="icon"
         onClick={handleSend}
         disabled={isPending || !content.trim()}
-        className="glow-primary-lg text-neutral-950"
+        className="bg-green-500 text-black hover:bg-green-400 rounded-xl transition-colors duration-150 shrink-0"
       >
         <SendHorizontal className="size-4" />
       </Button>

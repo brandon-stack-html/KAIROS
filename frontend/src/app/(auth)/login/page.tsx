@@ -47,42 +47,44 @@ export default function LoginPage() {
   if (!tenantId) return null;
 
   return (
-    <Card className="border-border/50">
-      <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-xl">Iniciar sesión</CardTitle>
-        <CardDescription>
+    <Card className="border-white/[0.06] bg-white/[0.02] shadow-none p-8">
+      <CardHeader className="space-y-1 pb-6 px-0 pt-0">
+        <CardTitle className="text-xl font-semibold">Iniciar sesión</CardTitle>
+        <CardDescription className="text-zinc-500">
           Ingresa tus credenciales para continuar
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-zinc-300">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="tu@email.com"
               autoComplete="email"
+              className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-green-500/20"
               {...register("email")}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-red-400">
                 {errors.email.message}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <Label htmlFor="password" className="text-zinc-300">Contraseña</Label>
             <Input
               id="password"
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
+              className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-green-500/20"
               {...register("password")}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-red-400">
                 {errors.password.message}
               </p>
             )}
@@ -90,16 +92,16 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full bg-green-500 text-black font-medium hover:bg-green-400 transition-colors duration-150 mt-6"
             disabled={loginMutation.isPending}
           >
             {loginMutation.isPending ? "Ingresando..." : "Iniciar sesión"}
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm text-zinc-500">
           ¿No tienes cuenta?{" "}
-          <Link href={ROUTES.REGISTER} className="text-primary hover:text-primary/80 font-medium">
+          <Link href={ROUTES.REGISTER} className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-150">
             Regístrate
           </Link>
         </div>

@@ -24,7 +24,7 @@ export function Header() {
   const label = pathLabels[pathname] ?? "Kairos";
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-background/80 backdrop-blur-md px-4">
+    <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b border-white/[0.06] bg-background/80 backdrop-blur-md px-4">
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-5" />
       <Breadcrumb>

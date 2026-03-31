@@ -34,13 +34,13 @@ export function InvoiceChart({ stats }: InvoiceChartProps) {
   const isEmpty = paid === 0 && pending === 0;
 
   return (
-    <Card>
+    <Card className="border-white/[0.06]">
       <CardHeader>
         <CardTitle className="text-sm font-medium">Estado de facturas</CardTitle>
       </CardHeader>
       <CardContent>
         {isEmpty ? (
-          <div className="flex items-center justify-center h-[180px] text-sm text-muted-foreground">
+          <div className="flex items-center justify-center h-[180px] text-sm text-zinc-500">
             No hay facturas registradas aún.
           </div>
         ) : (
@@ -62,18 +62,18 @@ export function InvoiceChart({ stats }: InvoiceChartProps) {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "var(--card)",
-                    border: "1px solid var(--border)",
+                    backgroundColor: "#18181b",
+                    border: "1px solid rgba(255,255,255,0.06)",
                     borderRadius: "6px",
-                    color: "var(--card-foreground)",
+                    color: "#fafafa",
                   }}
                   formatter={(value) => formatCurrency(Number(value))}
                 />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <p className="text-xs text-muted-foreground">Total</p>
-              <p className="text-sm font-semibold">{formatCurrency(total)}</p>
+              <p className="text-xs text-zinc-500">Total</p>
+              <p className="text-sm font-semibold text-white font-mono">{formatCurrency(total)}</p>
             </div>
           </div>
         )}

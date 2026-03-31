@@ -47,7 +47,7 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <p className="text-muted-foreground">Proyecto no encontrado.</p>
+      <p className="text-zinc-500">Proyecto no encontrado.</p>
     );
   }
 
@@ -68,13 +68,13 @@ export default function ProjectDetailPage() {
               {project.name}
             </h1>
             {project.description && (
-              <p className="text-sm text-muted-foreground max-w-2xl">
+              <p className="text-sm text-zinc-400 max-w-2xl">
                 {project.description}
               </p>
             )}
             {org && (
               <div className="flex items-center gap-2 pt-1">
-                <Badge variant="outline">{org.name}</Badge>
+                <Badge variant="outline" className="border-white/[0.06] bg-white/[0.02] text-zinc-300">{org.name}</Badge>
               </div>
             )}
           </div>
@@ -83,7 +83,7 @@ export default function ProjectDetailPage() {
       </div>
 
       {/* Tabs */}
-      <nav className="flex gap-1 border-b" role="tablist">
+      <nav className="flex gap-1 border-b border-white/[0.06]" role="tablist">
         {tabs.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -92,8 +92,8 @@ export default function ProjectDetailPage() {
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === key
-                ? "border-primary text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                ? "border-green-500 text-white"
+                : "border-transparent text-zinc-500 hover:text-zinc-200"
             }`}
           >
             <Icon className="size-4" />

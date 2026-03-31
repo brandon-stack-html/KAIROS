@@ -17,9 +17,9 @@ export function StatsCards({ stats }: StatsCardsProps) {
   return (
     <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       {/* Organizaciones — Verde */}
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+          <CardTitle className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
             Organizaciones
           </CardTitle>
           <div className="bg-green-500/10 text-green-400 rounded-lg p-2">
@@ -34,9 +34,9 @@ export function StatsCards({ stats }: StatsCardsProps) {
       </Card>
 
       {/* Proyectos — Amber */}
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+          <CardTitle className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
             Proyectos activos
           </CardTitle>
           <div className="bg-amber-500/10 text-amber-400 rounded-lg p-2">
@@ -47,16 +47,16 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <p className="text-3xl font-bold text-amber-400 font-mono">
             {stats.projects_active}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             de {stats.projects_total} totales
           </p>
         </CardContent>
       </Card>
 
       {/* Entregables — Azul */}
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+          <CardTitle className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
             Entregables pendientes
           </CardTitle>
           <div className="bg-blue-500/10 text-blue-400 rounded-lg p-2">
@@ -67,27 +67,27 @@ export function StatsCards({ stats }: StatsCardsProps) {
           <p className="text-3xl font-bold text-blue-400 font-mono">
             {stats.deliverables_pending}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             de {stats.deliverables_total} totales
           </p>
         </CardContent>
       </Card>
 
-      {/* Facturación — Verde claro */}
-      <Card>
+      {/* Facturación — Verde */}
+      <Card className="border-white/[0.06]">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+          <CardTitle className="text-xs font-medium text-zinc-500 uppercase tracking-widest">
             Facturación pendiente
           </CardTitle>
-          <div className="bg-primary/10 text-primary rounded-lg p-2">
+          <div className="bg-green-500/10 text-green-400 rounded-lg p-2">
             <DollarSign className="size-4" />
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-3xl font-bold text-primary font-mono">
+          <p className="text-3xl font-bold text-green-400 font-mono">
             {formatCurrency(stats.invoices_pending_amount)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             de {formatCurrency(stats.invoices_total_amount)} total
           </p>
         </CardContent>

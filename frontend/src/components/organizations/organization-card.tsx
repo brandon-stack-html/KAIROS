@@ -20,22 +20,22 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
 
   return (
     <Link href={`/organizations/${organization.id}`}>
-      <Card className="transition-colors hover:bg-accent/50 cursor-pointer">
+      <Card className="border-white/[0.06] transition-all duration-200 hover:border-white/[0.1] hover:bg-white/[0.02] cursor-pointer">
         <CardHeader className="pb-2">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary font-bold text-sm flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-green-500/10 text-green-400 font-bold text-sm flex items-center justify-center shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
               <CardTitle className="text-lg">{organization.name}</CardTitle>
-              <p className="text-xs font-mono text-muted-foreground mt-0.5">
+              <p className="text-xs font-mono text-zinc-500 mt-0.5">
                 /{organization.slug}
               </p>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500 uppercase tracking-widest">
             <Users className="size-4" />
             <span>
               {organization.members.length}{" "}

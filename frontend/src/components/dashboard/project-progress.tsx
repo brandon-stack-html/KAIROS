@@ -19,13 +19,13 @@ function ProjectProgressRow({ project }: { project: Project }) {
     <div className="space-y-1">
       <div className="flex justify-between text-sm">
         <span className="font-medium truncate max-w-[200px]">{project.name}</span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-zinc-500 text-xs font-mono">
           {isLoading ? "..." : `${approved}/${total}`}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-white/[0.04] overflow-hidden">
         <div
-          className="h-full rounded-full bg-primary transition-all"
+          className="h-full rounded-full bg-green-500 transition-all"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -39,7 +39,7 @@ export function ProjectProgress() {
   const topProjects = projects?.slice(0, 5) ?? [];
 
   return (
-    <Card>
+    <Card className="border-white/[0.06]">
       <CardHeader>
         <CardTitle className="text-sm font-medium">Progreso de proyectos</CardTitle>
       </CardHeader>
@@ -51,7 +51,7 @@ export function ProjectProgress() {
             <Skeleton className="h-8 w-full" />
           </>
         ) : topProjects.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
+          <p className="text-sm text-zinc-500 text-center py-4">
             No hay proyectos aún.
           </p>
         ) : (

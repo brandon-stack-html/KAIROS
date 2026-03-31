@@ -52,34 +52,36 @@ export function DocumentUploadDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-white/[0.06] bg-zinc-950">
         <DialogHeader>
-          <DialogTitle>Subir documento</DialogTitle>
+          <DialogTitle className="text-white">Subir documento</DialogTitle>
         </DialogHeader>
 
         <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
-          className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-8 transition-colors ${
+          className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-all duration-200 ${
             dragging
-              ? "border-primary bg-primary/5"
-              : "border-muted-foreground/30 hover:border-primary/50"
+              ? "border-green-500/50 bg-green-500/5"
+              : selected
+              ? "border-green-500/30 bg-green-500/5"
+              : "border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.02]"
           }`}
         >
-          <Upload className="size-8 text-muted-foreground" />
+          <Upload className={`size-8 transition-colors ${dragging || selected ? "text-green-400" : "text-zinc-600"}`} />
           {selected ? (
-            <p className="text-sm font-medium">{selected.name}</p>
+            <div className="text-center">
+              <p className="text-sm font-medium text-green-400">{selected.name}</p>
+              <p className="text-xs text-zinc-500 mt-1">{(selected.size / 1024).toFixed(0)} KB</p>
+            </div>
           ) : (
             <>
-              <p className="text-sm font-medium">
+              <p className="text-sm font-medium text-zinc-200">
                 Arrastra un archivo o haz clic
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-zinc-500">
                 PDF, imágenes, Word, ZIP, TXT — máx. 10 MB
               </p>
             </>
@@ -94,10 +96,11 @@ export function DocumentUploadDialog({
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" className="border-white/[0.06] hover:bg-white/[0.04]" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button
+            className="bg-green-500 text-black hover:bg-green-400"
             onClick={handleSubmit}
             disabled={!selected || isPending}
           >

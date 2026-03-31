@@ -16,7 +16,7 @@ const statusConfig: Record<
   PENDING: {
     label: "Pendiente",
     className:
-      "bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2 py-1 text-xs font-medium",
+      "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 rounded-full px-2 py-1 text-xs font-medium",
   },
   APPROVED: {
     label: "Aprobado",
@@ -31,17 +31,17 @@ const statusConfig: Record<
   DRAFT: {
     label: "Borrador",
     className:
-      "bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2 py-1 text-xs font-medium",
+      "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 rounded-full px-2 py-1 text-xs font-medium",
   },
   SENT: {
     label: "Enviada",
     className:
-      "bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full px-2 py-1 text-xs font-medium",
+      "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 rounded-full px-2 py-1 text-xs font-medium",
   },
   PAID: {
     label: "Pagada",
     className:
-      "bg-zinc-600/10 text-zinc-400 border border-zinc-600/20 rounded-full px-2 py-1 text-xs font-medium",
+      "bg-green-500/10 text-green-400 border border-green-500/20 rounded-full px-2 py-1 text-xs font-medium",
   },
   ACTIVE: {
     label: "Activo",
@@ -51,7 +51,7 @@ const statusConfig: Record<
   COMPLETED: {
     label: "Completado",
     className:
-      "bg-zinc-600/10 text-zinc-400 border border-zinc-600/20 rounded-full px-2 py-1 text-xs font-medium",
+      "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 rounded-full px-2 py-1 text-xs font-medium",
   },
 };
 

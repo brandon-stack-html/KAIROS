@@ -55,10 +55,10 @@ export function DeliverableForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-white/[0.06] bg-zinc-950">
         <DialogHeader>
-          <DialogTitle>Enviar entregable</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white">Enviar entregable</DialogTitle>
+          <DialogDescription className="text-zinc-400">
             Comparte un enlace al trabajo realizado
           </DialogDescription>
         </DialogHeader>
@@ -70,11 +70,15 @@ export function DeliverableForm({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título</FormLabel>
+                  <FormLabel className="text-zinc-300">Título</FormLabel>
                   <FormControl>
-                    <Input placeholder="Diseño de landing page v2" {...field} />
+                    <Input
+                      placeholder="Diseño de landing page v2"
+                      className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -83,15 +87,16 @@ export function DeliverableForm({
               name="url_link"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel className="text-zinc-300">URL</FormLabel>
                   <FormControl>
                     <Input
                       type="url"
                       placeholder="https://figma.com/file/..."
+                      className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -100,12 +105,13 @@ export function DeliverableForm({
               <Button
                 type="button"
                 variant="outline"
+                className="border-white/[0.06] hover:bg-white/[0.04]"
                 onClick={() => onOpenChange(false)}
                 disabled={submitDeliverable.isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={submitDeliverable.isPending}>
+              <Button type="submit" className="bg-green-500 text-black hover:bg-green-400" disabled={submitDeliverable.isPending}>
                 {submitDeliverable.isPending ? "Enviando..." : "Enviar"}
               </Button>
             </DialogFooter>

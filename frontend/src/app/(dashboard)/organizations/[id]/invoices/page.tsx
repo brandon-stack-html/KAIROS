@@ -57,13 +57,13 @@ export default function OrganizationInvoicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" nativeButton={false} render={<Link href={`/organizations/${id}`} />}>
+          <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-zinc-200" nativeButton={false} render={<Link href={`/organizations/${id}`} />}>
             <ArrowLeft className="size-4" />
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Facturas</h1>
             {org && (
-              <p className="text-sm text-muted-foreground">{org.name}</p>
+              <p className="text-sm text-zinc-500">{org.name}</p>
             )}
           </div>
         </div>
@@ -71,7 +71,7 @@ export default function OrganizationInvoicesPage() {
           allowedRoles={[Role.OWNER, Role.ADMIN]}
           userRole={userRole}
         >
-          <Button onClick={() => setFormOpen(true)}>
+          <Button className="bg-green-500 text-black hover:bg-green-400" onClick={() => setFormOpen(true)}>
             <Plus className="mr-2 size-4" />
             Nueva factura
           </Button>
@@ -80,36 +80,36 @@ export default function OrganizationInvoicesPage() {
 
       {/* Stats cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="border-white/[0.06]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-zinc-500">
               Total facturado
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalAmount)}</p>
+            <p className="text-2xl font-bold font-mono text-white">{formatCurrency(totalAmount)}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-white/[0.06]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-zinc-500">
               Pagado
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold font-mono text-green-400">
               {formatCurrency(paidAmount)}
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-white/[0.06]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-zinc-500">
               Pendiente
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-orange-600">
+            <p className="text-2xl font-bold font-mono text-amber-400">
               {formatCurrency(pendingAmount)}
             </p>
           </CardContent>
@@ -117,7 +117,7 @@ export default function OrganizationInvoicesPage() {
       </div>
 
       {/* Tabla de facturas */}
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardContent className="pt-6">
           <InvoiceTable
             orgId={id}

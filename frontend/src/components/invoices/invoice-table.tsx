@@ -44,40 +44,40 @@ export function InvoiceTable({ orgId, invoices, userRole }: InvoiceTableProps) {
       <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Título</TableHead>
-            <TableHead className="text-right">Monto</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead>Creada</TableHead>
-            <TableHead>Pagada</TableHead>
-            <TableHead className="w-12" />
+          <TableRow className="border-white/[0.06]">
+            <TableHead className="text-zinc-500">Título</TableHead>
+            <TableHead className="text-right text-zinc-500">Monto</TableHead>
+            <TableHead className="text-zinc-500">Estado</TableHead>
+            <TableHead className="text-zinc-500">Creada</TableHead>
+            <TableHead className="text-zinc-500">Pagada</TableHead>
+            <TableHead className="w-12 text-zinc-500" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {invoices.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+              <TableCell colSpan={6} className="text-center text-zinc-500 py-8">
                 No hay facturas aún
               </TableCell>
             </TableRow>
           ) : (
             invoices.map((invoice) => (
-              <TableRow key={invoice.id}>
-                <TableCell className="font-medium">
+              <TableRow key={invoice.id} className="border-white/[0.06] hover:bg-white/[0.02] transition-colors">
+                <TableCell className="font-medium text-white">
                   {invoice.title}
                 </TableCell>
-                <TableCell className="text-right font-mono">
+                <TableCell className="text-right font-mono text-white">
                   {formatAmount(invoice.amount)}
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={invoice.status} />
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-zinc-500 text-sm font-mono">
                   {format(new Date(invoice.created_at), "d MMM yyyy", {
                     locale: es,
                   })}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
+                <TableCell className="text-zinc-500 text-sm font-mono">
                   {invoice.paid_at
                     ? format(new Date(invoice.paid_at), "d MMM yyyy", {
                         locale: es,
@@ -93,6 +93,7 @@ export function InvoiceTable({ orgId, invoices, userRole }: InvoiceTableProps) {
                       <Button
                         size="sm"
                         variant="outline"
+                        className="border-green-500/20 hover:border-green-500/40 hover:bg-green-500/10 text-green-400"
                         onClick={() => setPayTarget(invoice.id)}
                       >
                         <CircleDollarSign className="mr-1.5 size-3.5" />

@@ -54,10 +54,10 @@ export function InvoiceForm({ orgId, open, onOpenChange }: InvoiceFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md border-white/[0.06] bg-zinc-950">
         <DialogHeader>
-          <DialogTitle>Nueva factura</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white">Nueva factura</DialogTitle>
+          <DialogDescription className="text-zinc-400">
             Crea una factura para esta organización
           </DialogDescription>
         </DialogHeader>
@@ -69,14 +69,15 @@ export function InvoiceForm({ orgId, open, onOpenChange }: InvoiceFormProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título</FormLabel>
+                  <FormLabel className="text-zinc-300">Título</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Desarrollo web - Marzo 2026"
+                      className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -85,15 +86,16 @@ export function InvoiceForm({ orgId, open, onOpenChange }: InvoiceFormProps) {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Monto</FormLabel>
+                  <FormLabel className="text-zinc-300">Monto (USD)</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="2500.00"
                       inputMode="decimal"
+                      className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 font-mono"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -102,12 +104,13 @@ export function InvoiceForm({ orgId, open, onOpenChange }: InvoiceFormProps) {
               <Button
                 type="button"
                 variant="outline"
+                className="border-white/[0.06] hover:bg-white/[0.04]"
                 onClick={() => onOpenChange(false)}
                 disabled={createInvoice.isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={createInvoice.isPending}>
+              <Button type="submit" className="bg-green-500 text-black hover:bg-green-400" disabled={createInvoice.isPending}>
                 {createInvoice.isPending ? "Creando..." : "Crear factura"}
               </Button>
             </DialogFooter>

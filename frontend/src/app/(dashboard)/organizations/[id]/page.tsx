@@ -49,7 +49,7 @@ export default function OrganizationDetailPage() {
 
   if (!org) {
     return (
-      <p className="text-muted-foreground">Organización no encontrada.</p>
+      <p className="text-zinc-500">Organización no encontrada.</p>
     );
   }
 
@@ -66,16 +66,16 @@ export default function OrganizationDetailPage() {
       <div className="flex items-start justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{org.name}</h1>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-zinc-500">
             <span className="font-mono">/{org.slug}</span>
             <span>·</span>
-            <span>{org.members.length} miembros</span>
+            <span>{org.members.length} {org.members.length === 1 ? "miembro" : "miembros"}</span>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <nav className="flex gap-1 border-b" role="tablist">
+      <nav className="flex gap-1 border-b border-white/[0.06]" role="tablist">
         {tabs.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -84,8 +84,8 @@ export default function OrganizationDetailPage() {
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === key
-                ? "border-primary text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                ? "border-green-500 text-white"
+                : "border-transparent text-zinc-500 hover:text-zinc-200"
             }`}
           >
             <Icon className="size-4" />
@@ -97,7 +97,7 @@ export default function OrganizationDetailPage() {
       {/* Tab content */}
       {activeTab === "members" && (
         <>
-          <Card>
+          <Card className="border-white/[0.06]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle className="text-lg">
                 Miembros ({org.members.length})
@@ -106,7 +106,7 @@ export default function OrganizationDetailPage() {
                 allowedRoles={[Role.OWNER, Role.ADMIN]}
                 userRole={currentUserRole}
               >
-                <Button size="sm" onClick={() => setInviteOpen(true)}>
+                <Button size="sm" className="bg-green-500 text-black hover:bg-green-400" onClick={() => setInviteOpen(true)}>
                   <UserPlus className="mr-2 size-4" />
                   Invitar
                 </Button>
@@ -126,15 +126,15 @@ export default function OrganizationDetailPage() {
       )}
 
       {activeTab === "invoices" && (
-        <Card>
+        <Card className="border-white/[0.06]">
           <CardHeader>
             <CardTitle className="text-lg">Facturas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="mb-4 text-sm text-muted-foreground">
+            <p className="mb-4 text-sm text-zinc-400">
               Gestiona las facturas de esta organización.
             </p>
-            <Button variant="outline" nativeButton={false} render={<Link href={`/organizations/${id}/invoices`} />}>
+            <Button className="border-white/[0.06] hover:bg-white/[0.04]" variant="outline" nativeButton={false} render={<Link href={`/organizations/${id}/invoices`} />}>
               <FileText className="mr-2 size-4" />
               Ver todas las facturas
             </Button>

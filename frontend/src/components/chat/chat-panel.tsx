@@ -88,9 +88,9 @@ export function ChatPanel({ orgId, projectId }: ChatPanelProps) {
   if (!user) return null;
 
   return (
-    <div className="flex h-full min-h-[500px] overflow-hidden rounded-xl ring-1 ring-foreground/10">
+    <div className="flex h-full min-h-[500px] overflow-hidden rounded-xl border border-white/[0.06] bg-[#09090b]">
       {/* Sidebar — conversation list */}
-      <div className="w-[280px] shrink-0 border-r">
+      <div className="w-[260px] shrink-0 border-r border-white/[0.06]">
         <ConversationList
           conversations={conversations}
           activeId={activeId}
@@ -105,12 +105,12 @@ export function ChatPanel({ orgId, projectId }: ChatPanelProps) {
       </div>
 
       {/* Main — messages */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col min-w-0">
         {activeId ? (
           <>
             {/* Toolbar */}
-            <div className="flex items-center justify-between px-4 py-2 border-b bg-background/50">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.01]">
+              <div className="text-sm text-zinc-400">
                 {conversations.find((c) => c.id === activeId)?.type === ConversationType.PROJECT
                   ? "Chat del proyecto"
                   : "Chat de la organización"}
@@ -120,16 +120,16 @@ export function ChatPanel({ orgId, projectId }: ChatPanelProps) {
                 variant="outline"
                 onClick={handleExtractActions}
                 disabled={extractActions.isPending || messages.length === 0}
-                className="gap-2"
+                className="gap-2 border-purple-500/20 hover:border-purple-500/40 hover:bg-purple-500/10 text-purple-400 text-xs"
               >
-                <Sparkles className="w-4 h-4" />
-                Extraer tareas
+                <Sparkles className="w-3.5 h-3.5" />
+                {extractActions.isPending ? "Analizando..." : "Extraer tareas"}
               </Button>
             </div>
 
             {/* Action items panel */}
             {showActionItems && actionItemsJson && (
-              <div className="px-4 py-3 border-b">
+              <div className="px-4 py-3 border-b border-white/[0.06]">
                 <ActionItemsPanel
                   json={actionItemsJson}
                   onClose={() => {

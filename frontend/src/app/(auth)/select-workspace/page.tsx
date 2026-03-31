@@ -63,30 +63,31 @@ export default function SelectWorkspacePage() {
   };
 
   return (
-    <Card className="border-border/50">
-      <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-xl">Ingresa a tu workspace</CardTitle>
-        <CardDescription>
+    <Card className="border-white/[0.06] bg-white/[0.02] shadow-none p-8">
+      <CardHeader className="space-y-1 pb-6 px-0 pt-0">
+        <CardTitle className="text-xl font-semibold">Ingresa a tu workspace</CardTitle>
+        <CardDescription className="text-zinc-500">
           Escribe el slug de tu organización para continuar
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         <form onSubmit={handleSubmit(onLookup)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="slug">Slug del workspace</Label>
+            <Label htmlFor="slug" className="text-zinc-300">Slug del workspace</Label>
             <Input
               id="slug"
               placeholder="mi-empresa"
+              className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-green-500/20"
               {...register("slug")}
             />
             {errors.slug && (
-              <p className="text-sm text-destructive">{errors.slug.message}</p>
+              <p className="text-sm text-red-400">{errors.slug.message}</p>
             )}
           </div>
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full bg-green-500 text-black font-medium hover:bg-green-400 transition-colors duration-150 mt-6"
             disabled={tenantBySlug.isPending}
           >
             {tenantBySlug.isPending ? "Buscando..." : "Continuar"}
@@ -94,13 +95,13 @@ export default function SelectWorkspacePage() {
         </form>
 
         {notFound && (
-          <div className="mt-4 space-y-3 rounded-md border p-4">
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-4 space-y-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
+            <p className="text-sm text-zinc-400">
               No se encontró ese workspace. ¿Quieres crearlo?
             </p>
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full border-white/[0.06] hover:bg-white/[0.04] text-zinc-300"
               onClick={onCreateWorkspace}
               disabled={createTenant.isPending}
             >
@@ -109,9 +110,9 @@ export default function SelectWorkspacePage() {
           </div>
         )}
 
-        <div className="mt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm text-zinc-500">
           ¿Ya tienes cuenta?{" "}
-          <Link href={ROUTES.LOGIN} className="text-primary hover:text-primary/80 font-medium">
+          <Link href={ROUTES.LOGIN} className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-150">
             Inicia sesión
           </Link>
         </div>

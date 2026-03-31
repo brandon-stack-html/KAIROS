@@ -38,12 +38,12 @@ export function DeliverableList({ projectId, userRole }: DeliverableListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">
           Entregables ({deliverables?.length ?? 0})
         </h2>
-        <Button size="sm" onClick={() => setFormOpen(true)}>
+        <Button className="bg-green-500 text-black hover:bg-green-400" size="sm" onClick={() => setFormOpen(true)}>
           <PackagePlus className="mr-2 size-4" />
           Enviar entregable
         </Button>
@@ -55,14 +55,14 @@ export function DeliverableList({ projectId, userRole }: DeliverableListProps) {
           title="Sin entregables"
           description="Aún no se han enviado entregables para este proyecto."
           action={
-            <Button size="sm" onClick={() => setFormOpen(true)}>
+            <Button className="bg-green-500 text-black hover:bg-green-400" size="sm" onClick={() => setFormOpen(true)}>
               <PackagePlus className="mr-2 size-4" />
               Enviar el primero
             </Button>
           }
         />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {deliverables?.map((deliverable) => (
             <DeliverableCard
               key={deliverable.id}

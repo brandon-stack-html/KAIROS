@@ -38,13 +38,13 @@ export function AppSidebar() {
       .slice(0, 2) ?? "?";
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b px-4 py-3">
+    <Sidebar className="border-r border-white/[0.06]">
+      <SidebarHeader className="border-b border-white/[0.06] px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-            <Zap className="w-4 h-4" />
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-500 text-black">
+            <Zap className="w-4 h-4 font-bold" />
           </div>
-          <span className="text-xl font-black tracking-tight">Kairos</span>
+          <span className="text-xl font-bold tracking-tighter">Kairos</span>
         </Link>
       </SidebarHeader>
 
@@ -62,10 +62,11 @@ export function AppSidebar() {
                   isActive={isActive}
                   render={<Link href={item.href} />}
                   className={cn(
-                    isActive && "border-r-2 border-primary bg-primary/10 text-primary"
+                    "text-sm text-zinc-400 hover:text-zinc-200 transition-colors duration-150",
+                    isActive && "border-l-2 border-green-500 bg-white/[0.04] text-white"
                   )}
                 >
-                  <item.icon className="size-4" />
+                  <item.icon className="size-4 text-zinc-500" />
                   <span>{item.label}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -74,33 +75,28 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-2">
+      <SidebarFooter className="border-t border-white/[0.06] p-2">
         <DropdownMenu>
           <DropdownMenuTrigger
               render={
-                <button className="flex w-full items-center gap-3 rounded-md p-2 text-left text-sm hover:bg-accent" />
+                <button className="flex w-full items-center gap-3 rounded-lg p-2 text-left text-sm hover:bg-white/[0.04] transition-colors duration-150" />
               }
             >
-              <Avatar className="size-8">
-                <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+              <Avatar className="size-8 ring-2 ring-white/[0.06]">
+                <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
               </Avatar>
               <div className="flex-1 truncate">
-                <div className="flex items-center gap-2">
-                  <p className="truncate font-medium">{user?.name}</p>
-                  <span className="text-[10px] uppercase tracking-widest font-bold bg-primary/10 text-primary px-2 py-0.5 rounded">
-                    Pro
-                  </span>
-                </div>
-                <p className="truncate text-xs text-muted-foreground">
+                <p className="truncate text-sm font-medium text-white">{user?.name}</p>
+                <p className="truncate text-xs text-zinc-500">
                   {user?.email}
                 </p>
               </div>
-              <ChevronsUpDown className="size-4 text-muted-foreground" />
+              <ChevronsUpDown className="size-4 text-zinc-500" />
             </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuContent align="start" className="w-56 border-white/[0.06] bg-zinc-900">
             <DropdownMenuItem
               onClick={() => logoutMutation.mutate()}
-              className="text-destructive focus:text-destructive"
+              className="text-red-400 focus:text-red-300 focus:bg-red-500/10 cursor-pointer"
             >
               <LogOut className="mr-2 size-4" />
               Cerrar sesión

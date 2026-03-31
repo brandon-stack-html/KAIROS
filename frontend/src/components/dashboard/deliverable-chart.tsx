@@ -30,7 +30,7 @@ export function DeliverableChart({ stats }: DeliverableChartProps) {
   ];
 
   return (
-    <Card>
+    <Card className="border-white/[0.06]">
       <CardHeader>
         <CardTitle className="text-sm font-medium">
           Entregables por estado
@@ -39,20 +39,21 @@ export function DeliverableChart({ stats }: DeliverableChartProps) {
       <CardContent>
         <ResponsiveContainer width="100%" height={180}>
           <BarChart layout="vertical" data={data}>
-            <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
+            <XAxis type="number" tick={{ fill: "#a1a1aa", fontSize: 12 }} />
             <YAxis
               type="category"
               dataKey="name"
-              tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+              tick={{ fill: "#a1a1aa", fontSize: 12 }}
               width={80}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "var(--card)",
-                border: "1px solid var(--border)",
+                backgroundColor: "#18181b",
+                border: "1px solid rgba(255,255,255,0.06)",
                 borderRadius: "6px",
-                color: "var(--card-foreground)",
+                color: "#fafafa",
               }}
+              cursor={{ fill: "rgba(255,255,255,0.04)" }}
             />
             <Bar dataKey="value" radius={[0, 4, 4, 0]}>
               {data.map((entry) => (

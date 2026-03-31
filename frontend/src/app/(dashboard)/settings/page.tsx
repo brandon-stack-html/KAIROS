@@ -88,44 +88,46 @@ export default function SettingsPage() {
     <div className="max-w-xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Configuración</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-zinc-500 mt-1">
           Administra tu perfil y preferencias.
         </p>
       </div>
 
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardHeader>
           <CardTitle>Perfil</CardTitle>
-          <CardDescription>Información de tu cuenta en Kairos</CardDescription>
+          <CardDescription className="text-zinc-500">Información de tu cuenta en Kairos</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {editing ? (
             <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
               <div className="space-y-1">
-                <Label htmlFor="full_name">Nombre</Label>
-                <Input id="full_name" {...register("full_name")} />
+                <Label htmlFor="full_name" className="text-zinc-300">Nombre</Label>
+                <Input id="full_name" className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600" {...register("full_name")} />
                 {errors.full_name && (
-                  <p className="text-sm text-destructive">{errors.full_name.message}</p>
+                  <p className="text-sm text-red-400">{errors.full_name.message}</p>
                 )}
               </div>
               <div className="space-y-1">
-                <Label htmlFor="avatar_url">URL de avatar</Label>
+                <Label htmlFor="avatar_url" className="text-zinc-300">URL de avatar</Label>
                 <Input
                   id="avatar_url"
+                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
                   placeholder="https://example.com/avatar.png"
                   {...register("avatar_url")}
                 />
                 {errors.avatar_url && (
-                  <p className="text-sm text-destructive">{errors.avatar_url.message}</p>
+                  <p className="text-sm text-red-400">{errors.avatar_url.message}</p>
                 )}
               </div>
               <div className="flex gap-2 pt-1">
-                <Button type="submit" disabled={mutation.isPending}>
+                <Button type="submit" className="bg-green-500 text-black hover:bg-green-400" disabled={mutation.isPending}>
                   {mutation.isPending ? "Guardando…" : "Guardar"}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
+                  className="border-white/[0.06] hover:bg-white/[0.04]"
                   onClick={() => {
                     setEditing(false);
                     reset();
@@ -140,48 +142,48 @@ export default function SettingsPage() {
               <div className="flex items-start justify-between">
                 <div className="space-y-3 flex-1">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Nombre</p>
-                    <p>{currentUser?.name}</p>
+                    <p className="text-sm font-medium text-zinc-500">Nombre</p>
+                    <p className="text-white">{currentUser?.name}</p>
                   </div>
-                  <Separator />
+                  <Separator className="bg-white/[0.06]" />
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Email</p>
-                    <p>{currentUser?.email}</p>
+                    <p className="text-sm font-medium text-zinc-500">Email</p>
+                    <p className="text-zinc-300 font-mono">{currentUser?.email}</p>
                   </div>
                   {currentUser?.avatar_url && (
                     <>
-                      <Separator />
+                      <Separator className="bg-white/[0.06]" />
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Avatar</p>
-                        <p className="text-sm text-muted-foreground truncate max-w-xs">
+                        <p className="text-sm font-medium text-zinc-500">Avatar</p>
+                        <p className="text-sm text-zinc-500 truncate max-w-xs">
                           {currentUser.avatar_url}
                         </p>
                       </div>
                     </>
                   )}
-                  <Separator />
+                  <Separator className="bg-white/[0.06]" />
                   <div className="flex items-center gap-2">
-                    <Shield className="size-4 text-muted-foreground" />
+                    <Shield className="size-4 text-zinc-500" />
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Estado</p>
-                      <Badge variant={currentUser?.is_active ? "default" : "destructive"}>
+                      <p className="text-sm font-medium text-zinc-500">Estado</p>
+                      <Badge variant={currentUser?.is_active ? "default" : "destructive"} className={currentUser?.is_active ? "bg-green-500/10 text-green-400 border-green-500/20" : ""}>
                         {currentUser?.is_active ? "Activa" : "Inactiva"}
                       </Badge>
                     </div>
                   </div>
-                  <Separator />
+                  <Separator className="bg-white/[0.06]" />
                   <div className="flex items-center gap-2">
-                    <Hash className="size-4 text-muted-foreground" />
+                    <Hash className="size-4 text-zinc-500" />
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Workspace ID</p>
-                      <p className="font-mono text-sm text-muted-foreground">
+                      <p className="text-sm font-medium text-zinc-500">Workspace ID</p>
+                      <p className="font-mono text-sm text-zinc-500">
                         {tenantId?.slice(0, 8)}…
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => setEditing(true)}>
+              <Button variant="outline" className="border-white/[0.06] hover:bg-white/[0.04]" onClick={() => setEditing(true)}>
                 Editar perfil
               </Button>
             </>
@@ -189,13 +191,13 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardHeader>
           <CardTitle>Preferencias</CardTitle>
-          <CardDescription>Personaliza tu experiencia en Kairos</CardDescription>
+          <CardDescription className="text-zinc-500">Personaliza tu experiencia en Kairos</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Label>Tema</Label>
+          <Label className="text-zinc-300">Tema</Label>
           <div className="flex gap-2">
             {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
               <Button
@@ -203,7 +205,11 @@ export default function SettingsPage() {
                 variant={theme === value ? "default" : "outline"}
                 size="sm"
                 onClick={() => setTheme(value)}
-                className="flex items-center gap-2"
+                className={`flex items-center gap-2 ${
+                  theme === value
+                    ? "bg-white/[0.04] border-white/[0.06] text-white"
+                    : "border-white/[0.06] text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.02]"
+                }`}
               >
                 <Icon className="size-4" />
                 {label}
@@ -213,12 +219,12 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-white/[0.06]">
         <CardHeader>
           <CardTitle>Sobre Kairos</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-zinc-500">
             Kairos es un portal de clientes para freelancers. Gestiona tus
             organizaciones, proyectos, entregables y facturas en un solo lugar.
           </p>

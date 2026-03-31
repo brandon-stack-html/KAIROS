@@ -55,17 +55,18 @@ export function OrganizationForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre</FormLabel>
+              <FormLabel className="text-zinc-300">Nombre</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Mi Empresa"
+                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600"
                   {...field}
                   onChange={(e) =>
                     handleNameChange(e.target.value, field.onChange)
                   }
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -74,14 +75,18 @@ export function OrganizationForm() {
           name="slug"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Slug</FormLabel>
+              <FormLabel className="text-zinc-300">Slug</FormLabel>
               <FormControl>
-                <Input placeholder="mi-empresa" {...field} />
+                <Input
+                  placeholder="mi-empresa"
+                  className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 font-mono"
+                  {...field}
+                />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-zinc-500">
                 Identificador único. Solo minúsculas, números y guiones.
               </FormDescription>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -89,11 +94,12 @@ export function OrganizationForm() {
           <Button
             type="button"
             variant="outline"
+            className="border-white/[0.06] hover:bg-white/[0.04]"
             onClick={() => router.back()}
           >
             Cancelar
           </Button>
-          <Button type="submit" disabled={createOrg.isPending}>
+          <Button type="submit" className="bg-green-500 text-black hover:bg-green-400" disabled={createOrg.isPending}>
             {createOrg.isPending ? "Creando..." : "Crear organización"}
           </Button>
         </div>
