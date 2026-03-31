@@ -24,6 +24,9 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY src/ ./src/
 
+# Create uploads dir with correct ownership before dropping to app user
+RUN mkdir -p /app/uploads && chown app:app /app/uploads
+
 # Make sure the venv's bin is on PATH
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
