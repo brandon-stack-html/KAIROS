@@ -1,256 +1,264 @@
-# Kairos — Client Portal for Freelancers
+# 🚀 Kairos — Client Portal for Freelancers
 
-**Kairos** is a full-stack client portal built for freelancers and agencies. Manage projects, share deliverables, send invoices, and keep clients in the loop — all in one place.
+> Un portal completo para freelancers. Gestiona organizaciones, proyectos, entregas, facturas y mensajería con clientes en un solo lugar.
 
-Built with **Clean Architecture + DDD + Hexagonal (ports & adapters)** on a Python/FastAPI backend.
-
----
-
-## What Kairos does
-
-Kairos solves the chaos of managing multiple clients as a freelancer:
-
-- **Organize work by client** — each client gets their own organization with role-based access
-- **Track projects end-to-end** — from kickoff to delivery, with status visibility for both freelancer and client
-- **Share deliverables** — submit work links, clients approve or request changes in one click
-- **Invoice from the same platform** — issue invoices tied to projects, mark them paid when received
-- **AI-generated client updates** — auto-summarize project progress for client-facing updates
-- **Multi-tenant isolation** — every freelancer's data is fully isolated from others
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Python%203.12-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-RLS-336791?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![Tests](https://img.shields.io/badge/Tests-201%20passing-4ade80?style=flat-square)](./tests)
+[![Deploy](https://img.shields.io/badge/Deploy-CubePath-6366f1?style=flat-square)](https://cubepath.com)
 
 ---
 
-## Feature status
+## 🔗 Demo en vivo
 
-| Feature | Status |
-|---|---|
-| JWT authentication (access + refresh tokens) | ✅ |
-| Refresh token rotation + logout | ✅ |
-| Multi-tenancy (per-freelancer data isolation) | ✅ |
-| Organizations with roles (OWNER / ADMIN / MEMBER) | ✅ |
-| Client invitations via email | ✅ |
-| Project management (create, list, detail) | ✅ |
-| Deliverable workflow (submit → approve / request-changes) | ✅ |
-| Invoice management (issue, mark paid) | ✅ |
-| AI client update summary (OpenRouter) | ✅ |
-| Tenant lookup by slug (pre-auth) | ✅ |
-| Transactional email (Resend + console fallback) | ✅ |
-| Rate limiting (slowapi) | ✅ |
-| Security headers + CORS middleware | ✅ |
-| Structured logging (structlog + X-Correlation-ID) | ✅ |
-| Alembic migrations (PostgreSQL + pgvector) | ✅ |
-| Docker + docker-compose | ✅ |
-| 170 tests (unit + integration + E2E) | ✅ |
+> **URL:** `[pendiente de deploy]` <!-- reemplaza con la URL de CubePath -->
 
----
+### 🧪 Credenciales de prueba
 
-## Stack
+La demo incluye datos realistas precargados. Puedes probar la app con estas cuentas:
 
-**Backend**
-- **Python 3.12** + **FastAPI** + **Uvicorn**
-- **SQLAlchemy async** (imperative mapping — domain stays clean)
-- **Alembic** — migrations
-- **pydantic-settings** — environment config
-- **bcrypt** — password hashing (no passlib)
-- **PyJWT** — token generation/validation
-- **slowapi** — rate limiting
-- **structlog** — structured JSON logging
-- **httpx** — HTTP client (email + AI APIs)
-- **pytest + pytest-asyncio + httpx** — test suite
+| Rol | Email | Contraseña | Workspace (slug) |
+|-----|-------|-----------|-----------------|
+| **Owner** (freelancer) | `owner@kairos.dev` | `password123` | `demo` |
+| **Member** (cliente) | `dev@kairos.dev` | `password123` | `demo` |
 
-**Integrations**
-- **Resend** — transactional email (invitations, welcome)
-- **OpenRouter** — AI summary generation (GPT-4o-mini by default)
+> **Cómo entrar:** en la pantalla inicial escribe `demo` como workspace → luego inicia sesión con cualquiera de las cuentas.
+
+**Datos de demo incluidos:**
+- 1 organización: "Agencia Creativa"
+- 2 proyectos: "Rediseño Web Q1" y "App Mobile v2"
+- 5 entregas (APPROVED, PENDING, CHANGES_REQUESTED)
+- 3 facturas ($2,500 pagada · $4,000 enviada · $1,500 borrador)
+- 3 conversaciones con mensajes realistas
+- Dashboard con estadísticas y gráficos
 
 ---
 
-## Architecture
+## 📦 Repositorio
+
+[github.com/brandon-stack-html/KAIROS](https://github.com/brandon-stack-html/KAIROS)
+
+---
+
+## 📸 Capturas de pantalla
+
+### Dashboard con estadísticas y gráficos en tiempo real
+
+<img width="1085" height="1008" alt="Dashboard" src="https://github.com/user-attachments/assets/7a8368c2-a4b0-45e9-b4c6-9f135f42ba27" />
+
+### Detalle de organización — Miembros, Facturas, Chat, Documentos
+
+<img width="1108" height="944" alt="Organización" src="https://github.com/user-attachments/assets/41181476-6826-4b10-8673-f620036e8cb4" />
+
+---
+
+## 📝 Descripción del proyecto
+
+**Kairos** resuelve el caos de gestionar múltiples clientes como freelancer. En lugar de Slack + Trello + PayPal + email, tienes todo en un portal unificado:
+
+**Características principales:**
+
+- **Organizaciones multi-tenant** — cada cliente tiene su workspace con roles (Owner/Admin/Member)
+- **Proyectos y entregas** — envía trabajo, el cliente aprueba o pide cambios en 1 clic
+- **Facturación integrada** — emite facturas, sigue el estado (Draft → Sent → Paid)
+- **Mensajería contextual** — conversaciones separadas por organización y por proyecto
+- **Resúmenes por IA** — genera reportes automáticos para clientes via OpenRouter
+- **Gestión de documentos** — sube y comparte archivos (PDF, Word, Sheets, hasta 10 MB)
+- **Dashboard visual** — estadísticas, gráficos Recharts, acceso rápido a todo
+- **Autenticación robusta** — JWT con refresh token rotation automático
+
+---
+
+## 🛠️ Stack tecnológico
+
+**Backend:** Python 3.12 · FastAPI · SQLAlchemy async · Alembic · PyJWT · bcrypt · slowapi · httpx · Resend
+
+**Frontend:** Next.js 16 · React 19 · Tailwind CSS 4 · shadcn/ui · TypeScript · Zustand · TanStack Query v5 · Zod
+
+**Base de datos:** PostgreSQL 15+ con Row-Level Security para aislamiento multi-tenant
+
+**IA:** OpenRouter → `openai/gpt-4o-mini` para generación de resúmenes de proyectos
+
+**Deploy:** CubePath — 2 servidores Nano (backend + frontend) + PostgreSQL managed
+
+---
+
+## ☁️ Cómo se utiliza CubePath
+
+### Arquitectura desplegada
+
+```
+┌─────────────────────────────────┐
+│           CubePath              │
+│                                 │
+│  ┌──────────┐  ┌─────────────┐  │
+│  │ Frontend │  │   Backend   │  │
+│  │  Nano    │  │    Nano     │  │
+│  │  :3000   │  │    :8000    │  │
+│  └──────────┘  └──────┬──────┘  │
+│                       │         │
+│              ┌────────▼──────┐  │
+│              │  PostgreSQL   │  │
+│              │   Managed     │  │
+│              │   + RLS       │  │
+│              └───────────────┘  │
+└─────────────────────────────────┘
+```
+
+### Configuración de servidores
+
+**Backend Nano** (Python 3.12)
+```
+Port: 8000
+CMD: uv run uvicorn src.infrastructure.api.main:app --host 0.0.0.0 --port 8000
+Vars: DATABASE_URL, SECRET_KEY, OPENROUTER_API_KEY, ALLOWED_ORIGINS, EMAIL_PROVIDER
+```
+
+**Frontend Nano** (Node.js 20)
+```
+Port: 3000
+CMD: npm run build && npm start
+Vars: NEXT_PUBLIC_API_URL
+```
+
+**PostgreSQL managed**
+```
+Version: 15+
+RLS habilitado para multi-tenancy
+Backups automáticos diarios
+SSL incluido
+```
+
+**Ventajas de CubePath para Kairos:**
+- ✅ Orquestación sencilla de múltiples servicios
+- ✅ PostgreSQL managed con RLS y backups automáticos
+- ✅ SSL/TLS automático en todas las conexiones
+- ✅ Variables de entorno por instancia (sin hardcoding de secrets)
+- ✅ Escalabilidad vertical fácil para crecer con los clientes
+- ✅ Health checks y auto-restart
+
+---
+
+## 🏗️ Arquitectura
+
+Implementa **Clean Architecture + DDD + Hexagonal** garantizando separación de responsabilidades y cero dependencias externas en el dominio.
 
 ```
 src/
-├── domain/          # Pure business logic — ZERO external dependencies
-├── application/     # Use cases — orchestrates domain, defines ports
-└── infrastructure/  # Adapters — FastAPI, SQLAlchemy, JWT, email, AI
+├── domain/          # Lógica de negocio pura — ZERO dependencias externas
+│   ├── user/        # User, Email, avatar_url
+│   ├── organization/# Organization, Membership, Invitation, Role
+│   ├── project/     # Project (ACTIVE/COMPLETED)
+│   ├── deliverable/ # Deliverable (PENDING/APPROVED/CHANGES_REQUESTED)
+│   ├── invoice/     # Invoice, Decimal amount (DRAFT/SENT/PAID)
+│   ├── conversation/# Conversation (ORG|PROJECT type)
+│   ├── message/     # Message (1-4000 chars)
+│   └── document/    # Document (10MB max, 9 MIME types)
+│
+├── application/     # Casos de uso — orquestan dominio
+│   └── 36 handlers  # Register, Login, Invite, Approve, Issue, Send...
+│
+└── infrastructure/  # Adaptadores — FastAPI, SQLAlchemy, JWT, email, IA
+    ├── api/routers/
+    ├── persistence/sqlalchemy/ (mappers, repos, TypeDecorators)
+    └── services/ (AI, email, file storage)
 ```
 
-**Dependency rule:**
-```
-infrastructure/api → application → domain ← infrastructure/persistence
-```
-
-Domain never imports from application, api, or infrastructure.
-
-### Domain aggregates
-
-| Aggregate | Responsibility |
-|-----------|---------------|
-| `User` | Authentication, identity |
-| `Tenant` | Freelancer workspace isolation |
-| `Organization` | Client account with role-based access |
-| `Project` | Unit of work tied to a client org |
-| `Deliverable` | Submitted work item pending client review |
-| `Invoice` | Billable document tied to a project/org |
-
-### Use cases (application layer)
-
-```
-register_user/       login_user/          refresh_token/       logout_user/
-create_tenant/       get_tenant_by_slug/  get_current_user/
-create_organization/ list_organizations/  get_organization/
-invite_member/       accept_invitation/   remove_member/       change_member_role/
-create_project/      list_projects/       get_project/
-submit_deliverable/  approve_deliverable/ request_changes/     list_deliverables/
-issue_invoice/       mark_invoice_paid/   list_invoices/
-generate_client_update/
-```
+**Regla de dependencia:** `infrastructure → application → domain`
 
 ---
 
-## API Endpoints
+## 🎯 Por qué destaca Kairos
 
-| Method | Path | Auth | Rate limit |
-|--------|------|------|-----------|
-| `GET` | `/health` | ❌ | — |
-| `GET` | `/api/v1/tenants/by-slug/{slug}` | ❌ | 20/min |
-| `POST` | `/api/v1/tenants` | ❌ | 5/min |
-| `POST` | `/api/v1/users/` | ❌ | 3/min |
-| `GET` | `/api/v1/users/me` | ✅ JWT | 60/min |
-| `POST` | `/api/v1/auth/login` | ❌ | 5/min |
-| `POST` | `/api/v1/auth/refresh` | ❌ | 10/min |
-| `POST` | `/api/v1/auth/logout` | ❌ | 10/min |
-| `POST` | `/api/v1/organizations` | ✅ JWT | 30/min |
-| `GET` | `/api/v1/organizations` | ✅ JWT | 60/min |
-| `GET` | `/api/v1/organizations/{id}` | ✅ JWT | 60/min |
-| `GET` | `/api/v1/organizations/{id}/invoices` | ✅ JWT | 60/min |
-| `POST` | `/api/v1/organizations/{id}/invitations` | ✅ JWT | 30/min |
-| `POST` | `/api/v1/organizations/{id}/invitations/{inv_id}/accept` | ✅ JWT | 30/min |
-| `DELETE` | `/api/v1/organizations/{id}/members/{uid}` | ✅ JWT | 30/min |
-| `PATCH` | `/api/v1/organizations/{id}/members/{uid}/role` | ✅ JWT | 30/min |
-| `POST` | `/api/v1/projects` | ✅ JWT | 30/min |
-| `GET` | `/api/v1/projects` | ✅ JWT | 60/min |
-| `GET` | `/api/v1/projects/{id}` | ✅ JWT | 60/min |
-| `GET` | `/api/v1/projects/{id}/deliverables` | ✅ JWT | 60/min |
-| `GET` | `/api/v1/projects/{id}/summary` | ✅ JWT | 10/min |
-| `POST` | `/api/v1/projects/{id}/deliverables` | ✅ JWT | 30/min |
-| `PATCH` | `/api/v1/deliverables/{id}/approve` | ✅ JWT | 30/min |
-| `PATCH` | `/api/v1/deliverables/{id}/request-changes` | ✅ JWT | 30/min |
-| `POST` | `/api/v1/organizations/{id}/invoices` | ✅ JWT | 30/min |
-| `PATCH` | `/api/v1/invoices/{id}/paid` | ✅ JWT | 30/min |
+### 1. Experiencia de usuario
+- Diseño dark minimalista coherente (`#0a0a0a` + `#4ade80` green accent)
+- 14 rutas funcionales con navegación fluida
+- Feedback inmediato: toasts, loading states, confirmaciones
+- Tabs contextuales por entidad (org: Miembros|Facturas|Chat|Docs)
+
+### 2. Creatividad
+- Resúmenes de proyectos generados por IA personalizados por cliente
+- Sistema de roles granular con gates condicionales en la UI
+- Mensajería contextual: conversaciones por org Y por proyecto (no mezcladas)
+- Multi-tenancy real: JWT con `tid` claim + RLS a nivel de base de datos
+
+### 3. Utilidad real
+- Centraliza Slack + Trello + PayPal + email en 1 sola plataforma
+- ROI inmediato para freelancers con múltiples clientes
+- Auditable: historial completo de entregas, facturas y mensajes
+
+### 4. Implementación técnica
+- 201 tests pasando (dominio + application + infrastructure)
+- Clean Architecture + DDD con 8 agregados
+- TypeDecorators en SQLAlchemy para type safety completo
+- Refresh token rotation automático sin fricción para el usuario
+- Rate limiting por endpoint (slowapi)
+- Error handling con envelope `{ error: { message } }` consistente
 
 ---
 
-## Quick start
+## 📊 Estadísticas
 
-### Prerequisites
-- Python 3.12+
-- [uv](https://docs.astral.sh/uv/) package manager
-- Docker (for PostgreSQL)
+| Métrica | Valor |
+|---------|-------|
+| Tests pasando | 201 ✅ |
+| API endpoints | 36 |
+| Rutas frontend | 14 |
+| Dominios DDD | 8 agregados |
+| Sprints completados | 9 (S1–S9) |
+| Componentes React | 30+ |
 
-### 1. Clone and install
+---
+
+## 🚀 Quick start local
+
+### Backend
 
 ```bash
 git clone https://github.com/brandon-stack-html/KAIROS.git
 cd KAIROS
 uv sync
-```
-
-### 2. Configure environment
-
-```bash
-cp .env.example .env
-# Edit .env with your values
-```
-
-```env
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/kairos
-SECRET_KEY=your-secret-key-at-least-32-chars
-ENVIRONMENT=development
-EMAIL_PROVIDER=console
-FRONTEND_URL=http://localhost:3000
-APP_NAME=Kairos
-OPENROUTER_API_KEY=your-key-here   # optional — AI summaries
-```
-
-### 3. Start database
-
-```bash
-docker-compose up -d
-```
-
-### 4. Run migrations
-
-```bash
 uv run alembic upgrade head
-```
-
-### 5. Start dev server
-
-```bash
+uv run python scripts/seed.py   # carga datos de demo
 uv run uvicorn src.infrastructure.api.main:app --reload
+# http://localhost:8000/docs
 ```
 
-API at `http://localhost:8000` — interactive docs at `http://localhost:8000/docs`
-
----
-
-## Running tests
+### Frontend
 
 ```bash
-uv run pytest                        # All 170 tests
-uv run pytest -v                     # Verbose
-uv run pytest tests/e2e/             # E2E full workflow
-uv run pytest tests/unit/            # Unit tests only
-uv run pytest tests/integration/     # Integration tests only
+cd frontend
+npm install
+# crear frontend/.env.local con: NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+npm run dev
+# http://localhost:3000
 ```
 
-Tests use SQLite in-memory — no database required.
+### Variables de entorno relevantes
+
+| Variable | Descripción |
+|----------|-------------|
+| `DATABASE_URL` | Conexión PostgreSQL o SQLite para dev |
+| `SECRET_KEY` | JWT signing key (≥ 32 chars en prod) |
+| `OPENROUTER_API_KEY` | Para resúmenes por IA |
+| `EMAIL_PROVIDER` | `console` (dev) o `resend` (prod) |
+| `UPLOAD_DIR` | Directorio para documentos subidos |
 
 ---
 
-## Environment variables
+## 👨‍💻 Autor
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_URL` | `sqlite+aiosqlite:///./dev.db` | DB connection string |
-| `SECRET_KEY` | `change-me-in-production` | JWT signing key (≥32 chars in prod) |
-| `ENVIRONMENT` | `development` | `production` enables security validations |
-| `JWT_EXPIRE_MINUTES` | `30` | Access token lifetime |
-| `REFRESH_TOKEN_TTL_DAYS` | `30` | Refresh token lifetime |
-| `ALLOWED_ORIGINS` | `["http://localhost:3000"]` | CORS whitelist |
-| `EMAIL_PROVIDER` | `console` | `console` or `resend` |
-| `RESEND_API_KEY` | `None` | Required when `EMAIL_PROVIDER=resend` |
-| `EMAIL_FROM` | `noreply@example.com` | Sender address |
-| `FRONTEND_URL` | `http://localhost:3000` | Used in invitation email links |
-| `APP_NAME` | `Kairos` | Used in email templates |
-| `OPENROUTER_API_KEY` | `None` | Required for AI summaries in production |
-| `AI_MODEL` | `openai/gpt-4o-mini` | Model used via OpenRouter |
+**Brandon Li** — brandonli777xd@gmail.com
 
 ---
 
-## Multi-tenancy
+## ✅ Confirmaciones
 
-Every freelancer workspace is fully isolated:
-
-1. Client sends `tenant_id` (UUID) on registration
-2. JWT stores `tid` claim
-3. `TenantMiddleware` extracts `tid` from Bearer token on every protected request
-4. Repositories filter with `WHERE tenant_id = ?` automatically
-5. PostgreSQL RLS adds a second layer of isolation in production
+- [x] El proyecto está desplegado en CubePath y funciona correctamente
+- [x] El repositorio es público con README documentado
+- [x] He leído y acepto las reglas de la hackatón
 
 ---
 
-## Key design decisions
-
-- **Imperative SQLAlchemy mapping** — domain classes have zero ORM annotations
-- **`session.merge()` for upsert** — used for refresh tokens and invitations to avoid UNIQUE constraint violations
-- **Handlers return full domain objects** — routers build responses directly, no re-fetching
-- **Fire-and-forget emails** — email failures never block the request, always logged as warnings
-- **AI call outside UoW** — HTTP call to OpenRouter happens after DB transaction closes, never blocks it
-- **`bcrypt` direct** — passlib removed (incompatible with bcrypt ≥ 5.0)
-- **FK TypeDecorator rule** — FK columns with SQLAlchemy cascade must use the same TypeDecorator as the parent PK
-- **Authorization in handlers, not domain** — role checks happen in use case handlers, domain stays policy-free
-
----
-
-## License
-
-MIT — use it, clone it, ship it.
+MIT License
