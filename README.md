@@ -12,7 +12,7 @@
 
 ## 🔗 Demo en vivo
 
-> **URL:** http://45.90.237.238:3000
+> **URL:** https://vps23933.cubepath.net
 
 ### 🧪 Credenciales de prueba
 
@@ -89,37 +89,54 @@ La demo incluye datos realistas precargados. Puedes probar la app con estas cuen
 ### Arquitectura desplegada
 
 ```
-┌─────────────────────────────────┐
-│           CubePath              │
-│                                 │
-│  ┌──────────┐  ┌─────────────┐  │
-│  │ Frontend │  │   Backend   │  │
-│  │  Nano    │  │    Nano     │  │
-│  │  :3000   │  │    :8000    │  │
-│  └──────────┘  └──────┬──────┘  │
-│                       │         │
-│              ┌────────▼──────┐  │
-│              │  PostgreSQL   │  │
-│              │   Managed     │  │
-│              │   + RLS       │  │
-│              └───────────────┘  │
-└─────────────────────────────────┘
+Internet (HTTPS)
+       │
+       ▼
+┌─────────────────────────────────────┐
+│             CubePath VPS            │
+│          vps23933.cubepath.net      │
+│                                     │
+│  ┌─────────────────────────────┐    │
+│  │   Caddy (reverse proxy)     │    │
+│  │   :80 + :443 (Let's Encrypt)│    │
+│  └────────┬──────────┬─────────┘    │
+│           │          │              │
+│     /api/*│          │/*            │
+│           ▼          ▼              │
+│  ┌──────────┐  ┌──────────────┐    │
+│  │ Backend  │  │  Frontend    │    │
+│  │ FastAPI  │  │  Next.js 16  │    │
+│  │ :8000    │  │  :3000       │    │
+│  └──────────┘  └──────────────┘    │
+│           │                         │
+│           ▼                         │
+│  ┌────────────────┐                │
+│  │   PostgreSQL   │                │
+│  │   + RLS        │                │
+│  └────────────────┘                │
+└─────────────────────────────────────┘
 ```
 
 ### Configuración de servidores
 
-**Backend Nano** (Python 3.12)
+**Caddy** (reverse proxy + SSL automático)
 ```
-Port: 8000
-CMD: uv run uvicorn src.infrastructure.api.main:app --host 0.0.0.0 --port 8000
+Ports: 80, 443
+SSL: Let's Encrypt automático para vps23933.cubepath.net
+Proxy: /api/* → backend:8000 | /* → frontend:3000
+```
+
+**Backend** (Python 3.12 + FastAPI)
+```
+Port: 8000 (interno, no expuesto directamente)
+CMD: alembic upgrade head && uvicorn src.infrastructure.api.main:app
 Vars: DATABASE_URL, SECRET_KEY, OPENROUTER_API_KEY, ALLOWED_ORIGINS, EMAIL_PROVIDER
 ```
 
-**Frontend Nano** (Node.js 20)
+**Frontend** (Node.js 20 + Next.js 16)
 ```
-Port: 3000
-CMD: npm run build && npm start
-Vars: NEXT_PUBLIC_API_URL
+Port: 3000 (interno, no expuesto directamente)
+NEXT_PUBLIC_API_URL: https://vps23933.cubepath.net/api/v1 (baked at build time)
 ```
 
 **PostgreSQL managed**
@@ -255,7 +272,7 @@ npm run dev
 
 ## ✅ Confirmaciones
 
-- [x] El proyecto está desplegado en CubePath: http://45.90.237.238:3000
+- [x] El proyecto está desplegado en CubePath: https://vps23933.cubepath.net
 - [x] El repositorio es público con README documentado
 - [x] He leído y acepto las reglas de la hackatón
 
